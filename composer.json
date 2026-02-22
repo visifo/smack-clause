@@ -26,6 +26,7 @@
     "require-dev": {
         "carthage-software/mago": "^1.10.0",
         "pestphp/pest": "^4.4.1",
+        "rector/rector": "^2.3.8",
         "spatie/ray": "^1.47"
     },
     "autoload": {
@@ -41,10 +42,12 @@
     "scripts": {
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/mago fmt",
+        "rect": "vendor/bin/rector src tests",
         "lint": "vendor/bin/mago lint --fix --unsafe",
+        "format": "vendor/bin/mago fmt",
         "check": "vendor/bin/mago analyze",
         "fix": [
+            "@rect",
             "@lint",
             "@format"
         ]

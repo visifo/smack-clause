@@ -10,7 +10,6 @@ excludes = []
 
 [formatter]
 preset = "pint"
-empty-line-after-opening-tag = false
 
 [linter]
 integrations = ["pest"]
