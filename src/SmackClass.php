@@ -1,6 +1,6 @@
 <?php
 
-namespace Visifo\Smack;
+namespace Visifo\SmackClause;
 
 class SmackClass
 {

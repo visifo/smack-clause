@@ -28,12 +28,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Visifo\\Smack\\": "src"
+            "Visifo\\SmackClause\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Visifo\\Smack\\Tests\\": "tests"
+            "Visifo\\SmackClause\\Tests\\": "tests"
         }
     },
     "scripts": {
