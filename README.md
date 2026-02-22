@@ -1,39 +1,62 @@
-# SmackClause is a punchy, no-nonsense guard layer: it hits bad input fast, exits early, and leaves a clean trace of what failed, where, and why. The vibe is direct and a little aggressive, but the behavior is precise: stack small, composable rules, get strong default messages, and keep the happy path readable.
+# SmackClause 🥊
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/visifo/smackclause.svg?style=flat-square)](https://packagist.org/packages/visifo/smackclause)
 [![Tests](https://img.shields.io/github/actions/workflow/status/visifo/smackclause/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/visifo/smackclause/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/visifo/smackclause.svg?style=flat-square)](https://packagist.org/packages/visifo/smackclause)
 
-This is where your description should go. Try and limit it to a paragraph or two. Consider adding a small example.
+**Fail fast. Speak clear. Stop bad input early.**
 
-## Support us
+SmackClause is a no-nonsense guard layer for PHP 8.5+. It hits bad input before it reaches your business logic, leaving a clean, structured trace of exactly what went wrong.
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/SmackClause.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/SmackClause)
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+## Why Smack?
+- **Direct Assertions**: No "should be" or "must be" fluff. Just `isInt()`, `isEmail()`, `min()`.
+- **Auto-Discovery**: It knows your variable names. No more passing string labels manually.
+- **PHP 8.5 Native**: Built for the future with property hooks, asymmetric visibility, and high-performance tokenization.
+- **Smart Nullability**: Choose between a hard hit (`that()`) or a quiet pass (`maybe()`).
 
 ## Installation
-
-You can install the package via composer:
-
 ```bash
-composer require visifo/smackclause
+composer require visifo/smack-clause
 ```
 
 ## Usage
 
+### The Hard Hit (Mandatory)
+`Smack::that()` expects a value. If it's null or fails a rule, it smacks back.
+
 ```php
-$skeleton = new Visifo\Smack();
-echo $skeleton->echoPhrase('Hello, Visifo!');
+Smack::that($email)->isString()->isEmail();
+Smack::that($age)->isInt()->min(18);
 ```
 
-## Testing
+### The Quiet Pass (Optional)
+`Smack::maybe()` allows nulls. If the value is there, it better be right.
 
-```bash
-composer test
+```php
+Smack::maybe($bio)->isString()->max(200);
 ```
+
+### Hitting Collections
+
+```php
+Smack::that($userIDs)->each()->isInt()->isPositive();
+```
+
+## Custom Smacks
+Extend the library with your own logic:
+
+```php
+Smack::register('isVat', fn($val) => str_starts_with($val, 'DE'));
+
+Smack::that($vat)->isVat();
+```
+
+## The Violation Report
+When a check fails, `SmackViolation` *(extends `InvalidArgumentException`)* gives you the forensics:
+- **Path**: The variable or nested key name.
+- **Value**: What was actually received.
+- **Rule**: Which assertion failed.
 
 ## Changelog
 
@@ -42,6 +65,9 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
+
+### Branding & Tone Guide
+[TONE.md](docs/TONE.md) file ensures that anyone contributing to the project maintains the "Smack" vibe.
 
 ## Security Vulnerabilities
 
