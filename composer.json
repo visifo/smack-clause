@@ -5,8 +5,10 @@
         "visifo",
         "smack-clause",
         "smack",
+        "clause",
         "guard clauses",
         "guard",
+        "clauses",
         "early return"
     ],
     "homepage": "https://github.com/visifo/smack-clause",
@@ -19,12 +21,12 @@
         }
     ],
     "require": {
-        "php": "^8.4"
+        "php": "^8.5"
     },
     "require-dev": {
-        "pestphp/pest": "^4.0",
-        "laravel/pint": "^1.0",
-        "spatie/ray": "^1.28"
+        "carthage-software/mago": "^1.10.0",
+        "pestphp/pest": "^4.4.1",
+        "spatie/ray": "^1.47"
     },
     "autoload": {
         "psr-4": {
@@ -38,14 +40,19 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
-            "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/mago fmt",
+        "lint": "vendor/bin/mago lint --fix --unsafe",
+        "check": "vendor/bin/mago analyze",
+        "fix": [
+            "@lint",
+            "@format"
+        ]
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "pestphp/pest-plugin": true
         }
     },
     "minimum-stability": "dev",
