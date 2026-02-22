@@ -1,16 +1,20 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "visifo/smack-clause",
+    "description": "SmackClause is a punchy, no-nonsense guard layer: it hits bad input fast, exits early, and leaves a clean trace of what failed, where, and why. The vibe is direct and a little aggressive, but the behavior is precise: stack small, composable rules, get strong default messages, and keep the happy path readable.",
     "keywords": [
-        ":vendor_name",
-        ":package_slug"
+        "visifo",
+        "smack-clause",
+        "smack",
+        "guard clauses",
+        "guard",
+        "early return"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/visifo/smack-clause",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Sergej Tihonov",
+            "email": "sergej@visifo.com",
             "role": "Developer"
         }
     ],
@@ -18,28 +22,29 @@
         "php": "^8.4"
     },
     "require-dev": {
-        :require_dev_testing,
-        :require_dev_codestyle,
+        "pestphp/pest": "^4.0",
+        "laravel/pint": "^1.0",
         "spatie/ray": "^1.28"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src"
+            "Visifo\\Smack\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Visifo\\Smack\\Tests\\": "tests"
         }
     },
     "scripts": {
-        :scripts_testing,
-        :scripts_codestyle
+        "test": "vendor/bin/pest",
+            "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
     },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            :plugins_testing,
+            "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true
         }
     },
