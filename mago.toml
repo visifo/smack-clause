@@ -33,3 +33,9 @@ strict-list-index-checks = true
 no-boolean-literal-comparison = true
 check-missing-type-hints = true
 register-super-globals = true
+
+# Ignore an error code only in specific paths
+ignore = [
+  { code = "mixed-method-access", in = "tests/" },
+  { code = "mixed-property-access", in = "tests/" },
+]

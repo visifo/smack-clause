@@ -42,7 +42,7 @@
     "scripts": {
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "rect": "vendor/bin/rector src tests",
+        "rect": "vendor/bin/rector",
         "lint": "vendor/bin/mago lint --fix --unsafe",
         "format": "vendor/bin/mago fmt",
         "check": "vendor/bin/mago analyze",
@@ -50,6 +50,11 @@
             "@rect",
             "@lint",
             "@format"
+        ],
+        "full": [
+            "@fix",
+            "@check",
+            "@test"
         ]
     },
     "config": {
