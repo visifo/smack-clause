@@ -40,12 +40,12 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest",
+        "test": "vendor/bin/pest --compact",
         "test-coverage": "vendor/bin/pest --coverage",
         "rect": "vendor/bin/rector",
         "lint": "vendor/bin/mago lint --fix --unsafe",
         "format": "vendor/bin/mago fmt",
-        "check": "vendor/bin/mago analyze",
+        "check": "vendor/bin/mago analyze --minimum-fail-level help",
         "fix": [
             "@rect",
             "@lint",
