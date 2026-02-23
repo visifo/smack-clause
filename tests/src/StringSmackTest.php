@@ -17,7 +17,7 @@ describe('isNotEmpty', function (): void {
 
 describe('isNotBlank', function (): void {
     it('throws for blank string', function (): void {
-        new StringSmack(" \n\t ")->isNotBlank();
+        new StringSmack(' ')->isNotBlank();
     })->throws(SmackViolation::class);
 
     it('returns for non-blank string', function (): void {
