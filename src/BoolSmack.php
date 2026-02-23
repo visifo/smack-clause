@@ -14,7 +14,7 @@ class BoolSmack
             return;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isFalse(): void
@@ -23,6 +23,6 @@ class BoolSmack
             return;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 }

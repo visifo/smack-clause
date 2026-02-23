@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\FloatSmack;
-use Visifo\SmackClause\SmackViolation;
+use Visifo\SmackClause\SmackException;
 
 describe('isPositive', function (): void {
     it('throws for non-positive float', function (float $value): void {
         new FloatSmack($value)->isPositive();
-    })->with([0.0, -1.5])->throws(SmackViolation::class);
+    })->with([0.0, -1.5])->throws(SmackException::class);
 
     it('returns for positive float', function (): void {
         $result = new FloatSmack(1.5)->isPositive();
@@ -18,7 +18,7 @@ describe('isPositive', function (): void {
 describe('isNegative', function (): void {
     it('throws for non-negative float', function (float $value): void {
         new FloatSmack($value)->isNegative();
-    })->with([0.0, 1.5])->throws(SmackViolation::class);
+    })->with([0.0, 1.5])->throws(SmackException::class);
 
     it('returns for negative float', function (): void {
         $result = new FloatSmack(-1.5)->isNegative();

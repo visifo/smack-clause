@@ -4,4 +4,4 @@ namespace Visifo\SmackClause;
 
 use InvalidArgumentException;
 
-class SmackViolation extends InvalidArgumentException {}
+class SmackException extends InvalidArgumentException {}

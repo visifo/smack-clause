@@ -14,6 +14,6 @@ class ObjectSmack
             return $this;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 }

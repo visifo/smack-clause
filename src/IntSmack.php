@@ -14,7 +14,7 @@ class IntSmack
             return $this;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isNegative(): self
@@ -23,6 +23,6 @@ class IntSmack
             return $this;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 }

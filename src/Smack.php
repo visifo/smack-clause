@@ -14,7 +14,7 @@ class Smack
             return new Smack($value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isBool(): BoolSmack
@@ -23,7 +23,7 @@ class Smack
             return new BoolSmack((bool) $this->value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isString(): StringSmack
@@ -32,7 +32,7 @@ class Smack
             return new StringSmack((string) $this->value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isInt(): IntSmack
@@ -41,7 +41,7 @@ class Smack
             return new IntSmack((int) $this->value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isFloat(): FloatSmack
@@ -50,7 +50,7 @@ class Smack
             return new FloatSmack((float) $this->value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isObject(): ObjectSmack
@@ -59,6 +59,6 @@ class Smack
             return new ObjectSmack((object) $this->value);
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 }

@@ -5,13 +5,13 @@ use Visifo\SmackClause\FloatSmack;
 use Visifo\SmackClause\IntSmack;
 use Visifo\SmackClause\ObjectSmack;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\SmackViolation;
+use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\StringSmack;
 
 describe('that', function (): void {
     it('throws on null', function (): void {
         Smack::that(null);
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns smack instance', function (): void {
         $result = Smack::that('value');
@@ -23,7 +23,7 @@ describe('that', function (): void {
 describe('isBool', function (): void {
     it('throws for non bool values', function (): void {
         Smack::that('true')->isBool();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns bool smack for bool values', function (): void {
         $result = Smack::that(true)->isBool();
@@ -35,7 +35,7 @@ describe('isBool', function (): void {
 describe('isString', function (): void {
     it('throws for non string values', function (): void {
         Smack::that(123)->isString();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns string smack for string values', function (): void {
         $result = Smack::that('value')->isString();
@@ -47,7 +47,7 @@ describe('isString', function (): void {
 describe('isInt', function (): void {
     it('throws for non int values', function (): void {
         Smack::that(1.23)->isInt();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns int smack for int values', function (): void {
         $result = Smack::that(123)->isInt();
@@ -59,7 +59,7 @@ describe('isInt', function (): void {
 describe('isFloat', function (): void {
     it('throws for non float values', function (): void {
         Smack::that(1)->isFloat();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns float smack for float values', function (): void {
         $result = Smack::that(1.23)->isFloat();
@@ -71,7 +71,7 @@ describe('isFloat', function (): void {
 describe('isObject', function (): void {
     it('throws for non object values', function (): void {
         Smack::that('value')->isObject();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns object smack for object values', function (): void {
         $result = Smack::that(new stdClass)->isObject();

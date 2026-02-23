@@ -14,7 +14,7 @@ class StringSmack
             return $this;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 
     public function isNotBlank(): self
@@ -23,6 +23,6 @@ class StringSmack
             return $this;
         }
 
-        throw new SmackViolation;
+        throw new SmackException;
     }
 }

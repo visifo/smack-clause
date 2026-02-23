@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\ObjectSmack;
-use Visifo\SmackClause\SmackViolation;
+use Visifo\SmackClause\SmackException;
 
 describe('isInstanceOf', function (): void {
     it('throws for non-matching class', function (): void {
         new ObjectSmack(new stdClass)->isInstanceOf(Exception::class);
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('returns for matching class', function (): void {
         $result = new ObjectSmack(new stdClass)->isInstanceOf(stdClass::class);

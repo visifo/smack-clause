@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\BoolSmack;
-use Visifo\SmackClause\SmackViolation;
+use Visifo\SmackClause\SmackException;
 
 describe('isTrue', function (): void {
     it('throws for false value', function (): void {
         new BoolSmack(false)->isTrue();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('passes for true value', function (): void {
         new BoolSmack(true)->isTrue();
@@ -16,7 +16,7 @@ describe('isTrue', function (): void {
 describe('isFalse', function (): void {
     it('throws for true value', function (): void {
         new BoolSmack(true)->isFalse();
-    })->throws(SmackViolation::class);
+    })->throws(SmackException::class);
 
     it('passes for false value', function (): void {
         new BoolSmack(false)->isFalse();
