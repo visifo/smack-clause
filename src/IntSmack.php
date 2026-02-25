@@ -2,10 +2,11 @@
 
 namespace Visifo\SmackClause;
 
-class IntSmack
+readonly class IntSmack
 {
     public function __construct(
-        private readonly int $value,
+        private int   $value,
+        private array $origin,
     ) {}
 
     public function isPositive(): self
@@ -14,7 +15,7 @@ class IntSmack
             return $this;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('positive int', $this->value, $this->origin);
     }
 
     public function isNegative(): self
@@ -23,6 +24,6 @@ class IntSmack
             return $this;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('negative int', $this->value, $this->origin);
     }
 }

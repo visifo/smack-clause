@@ -2,10 +2,11 @@
 
 namespace Visifo\SmackClause;
 
-class ObjectSmack
+readonly class ObjectSmack
 {
     public function __construct(
-        private readonly object $value,
+        private object $value,
+        private array  $origin,
     ) {}
 
     public function isInstanceOf(string $class): self
@@ -14,6 +15,6 @@ class ObjectSmack
             return $this;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('instance of', $this->value, $this->origin);
     }
 }

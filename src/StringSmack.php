@@ -2,10 +2,11 @@
 
 namespace Visifo\SmackClause;
 
-class StringSmack
+readonly class StringSmack
 {
     public function __construct(
-        private readonly string $value,
+        private string $value,
+        private array  $origin,
     ) {}
 
     public function isNotEmpty(): self
@@ -14,7 +15,7 @@ class StringSmack
             return $this;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('not empty', $this->value, $this->origin);
     }
 
     public function isNotBlank(): self
@@ -23,6 +24,6 @@ class StringSmack
             return $this;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('not blank', $this->value, $this->origin);
     }
 }

@@ -2,10 +2,11 @@
 
 namespace Visifo\SmackClause;
 
-class BoolSmack
+readonly class BoolSmack
 {
     public function __construct(
-        private readonly bool $value,
+        private bool  $value,
+        private array $origin,
     ) {}
 
     public function isTrue(): void
@@ -14,7 +15,7 @@ class BoolSmack
             return;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('true', $this->value, $this->origin);
     }
 
     public function isFalse(): void
@@ -23,6 +24,6 @@ class BoolSmack
             return;
         }
 
-        throw new SmackException;
+        throw SmackException::forConstraint('false', $this->value, $this->origin);
     }
 }
