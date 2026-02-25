@@ -1,27 +1,36 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\IntSmack;
+use Visifo\SmackClause\Smack;
 use Visifo\SmackClause\SmackException;
 
 describe('isPositive', function (): void {
-    it('throws for non-positive int', function (int $value): void {
-        new IntSmack($value)->isPositive();
-    })->with([0, -1])->throws(SmackException::class);
+    it('throws for zero int', function (): void {
+        Smack::that(0)->isInt()->isPositive();
+    })->throws(SmackException::class, 'Validation failed for `0`: expected `positive int`, got `0`.');
+
+    it('throws for negative int', function (): void {
+        Smack::that(-1)->isInt()->isPositive();
+    })->throws(SmackException::class, 'Validation failed for `-1`: expected `positive int`, got `-1`.');
 
     it('returns for positive int', function (): void {
-        $result = new IntSmack(1)->isPositive();
+        $result = Smack::that(1)->isInt()->isPositive();
 
         expect($result)->toBeInstanceOf(IntSmack::class);
     });
 });
 
 describe('isNegative', function (): void {
-    it('throws for non-negative int', function (int $value): void {
-        new IntSmack($value)->isNegative();
-    })->with([0, 1])->throws(SmackException::class);
+    it('throws for zero int', function (): void {
+        Smack::that(0)->isInt()->isNegative();
+    })->throws(SmackException::class, 'Validation failed for `0`: expected `negative int`, got `0`.');
+
+    it('throws for positive int', function (): void {
+        Smack::that(1)->isInt()->isNegative();
+    })->throws(SmackException::class, 'Validation failed for `1`: expected `negative int`, got `1`.');
 
     it('returns for negative int', function (): void {
-        $result = new IntSmack(-1)->isNegative();
+        $result = Smack::that(-1)->isInt()->isNegative();
 
         expect($result)->toBeInstanceOf(IntSmack::class);
     });

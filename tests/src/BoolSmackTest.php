@@ -1,24 +1,24 @@
 <?php declare(strict_types=1);
 
-use Visifo\SmackClause\BoolSmack;
+use Visifo\SmackClause\Smack;
 use Visifo\SmackClause\SmackException;
 
 describe('isTrue', function (): void {
     it('throws for false value', function (): void {
-        new BoolSmack(false)->isTrue();
-    })->throws(SmackException::class);
+        Smack::that(false)->isBool()->isTrue();
+    })->throws(SmackException::class, 'Validation failed for `false`: expected `true`, got `false`.');
 
     it('passes for true value', function (): void {
-        new BoolSmack(true)->isTrue();
+        Smack::that(true)->isBool()->isTrue();
     })->throwsNoExceptions();
 });
 
 describe('isFalse', function (): void {
     it('throws for true value', function (): void {
-        new BoolSmack(true)->isFalse();
-    })->throws(SmackException::class);
+        Smack::that(true)->isBool()->isFalse();
+    })->throws(SmackException::class, 'Validation failed for `true`: expected `false`, got `true`.');
 
     it('passes for false value', function (): void {
-        new BoolSmack(false)->isFalse();
+        Smack::that(false)->isBool()->isFalse();
     })->throwsNoExceptions();
 });
