@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
 use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
@@ -18,4 +19,6 @@ return RectorConfig::configure()
         privatization: true,
         instanceOf: true,
         earlyReturn: true
-    );
+    )->withSkip([
+        EncapsedStringsToSprintfRector::class,
+    ]);

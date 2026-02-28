@@ -5,7 +5,7 @@ namespace Visifo\SmackClause;
 readonly class BoolSmack
 {
     public function __construct(
-        private bool  $value,
+        private bool $value,
         private array $origin,
     ) {}
 

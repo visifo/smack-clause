@@ -2,8 +2,7 @@
 
 use Visifo\SmackClause\Smack;
 
-arch()->preset()->php()
-    ->ignoring(Smack::class);
+arch()->preset()->php()->ignoring(Smack::class);
 
 arch()->preset()->security();
 

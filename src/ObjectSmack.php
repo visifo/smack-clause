@@ -6,7 +6,7 @@ readonly class ObjectSmack
 {
     public function __construct(
         private object $value,
-        private array  $origin,
+        private array $origin,
     ) {}
 
     public function isInstanceOf(string $class): self

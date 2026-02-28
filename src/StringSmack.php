@@ -6,7 +6,7 @@ readonly class StringSmack
 {
     public function __construct(
         private string $value,
-        private array  $origin,
+        private array $origin,
     ) {}
 
     public function isNotEmpty(): self

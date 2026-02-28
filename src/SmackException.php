@@ -44,16 +44,19 @@ class SmackException extends InvalidArgumentException
         ));
     }
 
+    /**
+     * @param array<string, mixed> $origin
+     */
     private static function resolveSubject(array $origin): string
     {
-        if (count($origin) == 0) {
+        if ($origin === []) {
             return 'Argument';
         }
 
         $_file = new SplFileObject($origin['file']);
         $_file->seek($origin['line'] - 1);
+
         $line = $_file->current();
-        $_file = null;
 
         $output = [];
         preg_match("/{$origin['function']}\((.*?)\)/", $line, $output);

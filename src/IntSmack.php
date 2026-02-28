@@ -5,7 +5,7 @@ namespace Visifo\SmackClause;
 readonly class IntSmack
 {
     public function __construct(
-        private int   $value,
+        private int $value,
         private array $origin,
     ) {}
 
