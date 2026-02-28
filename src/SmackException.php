@@ -7,9 +7,9 @@ use SplFileObject;
 
 class SmackException extends InvalidArgumentException
 {
-    public static function forNullValue(array $origin): self
+    public static function forNullValue(Trace $trace): self
     {
-        $subject = self::resolveSubject($origin);
+        $subject = self::resolveSubject($trace);
 
         return new self(sprintf('Validation failed for `%s`: expected non-null value, got `null`.', $subject));
     }
@@ -17,9 +17,9 @@ class SmackException extends InvalidArgumentException
     public static function forExpectedType(
         string $expectedType,
         mixed $actualValue,
-        array $origin,
+        Trace $trace,
     ): self {
-        $subject = self::resolveSubject($origin);
+        $subject = self::resolveSubject($trace);
 
         return new self(sprintf(
             'Validation failed for `%s`: expected `%s`, got `%s`.',
@@ -32,9 +32,9 @@ class SmackException extends InvalidArgumentException
     public static function forConstraint(
         string $constraint,
         mixed $actualValue,
-        array $origin,
+        Trace $trace,
     ): self {
-        $subject = self::resolveSubject($origin);
+        $subject = self::resolveSubject($trace);
 
         return new self(sprintf(
             'Validation failed for `%s`: expected `%s`, got `%s`.',
@@ -44,24 +44,25 @@ class SmackException extends InvalidArgumentException
         ));
     }
 
-    /**
-     * @param array<string, mixed> $origin
-     */
-    private static function resolveSubject(array $origin): string
+    private static function resolveSubject(Trace $trace): string
     {
-        if ($origin === []) {
+        if (! is_file($trace->file)) {
             return 'Argument';
         }
 
-        $_file = new SplFileObject($origin['file']);
-        $_file->seek($origin['line'] - 1);
+        $_file = new SplFileObject($trace->file);
+        $_file->seek(max(0, $trace->line - 1));
 
         $line = $_file->current();
+        if (! is_string($line)) {
+            return 'Argument';
+        }
 
         $output = [];
-        preg_match("/{$origin['function']}\((.*?)\)/", $line, $output);
+        $pattern = sprintf('/%s\((.*?)\)/', preg_quote($trace->function, '/'));
+        preg_match($pattern, $line, $output);
 
-        return count($output) > 1 ? $output[1] : 'Argument';
+        return $output[1] ?? 'Argument';
     }
 
     private static function formatValue(mixed $value): string

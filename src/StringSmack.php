@@ -6,7 +6,7 @@ readonly class StringSmack
 {
     public function __construct(
         private string $value,
-        private array $origin,
+        private Trace $trace,
     ) {}
 
     public function isNotEmpty(): self
@@ -15,7 +15,7 @@ readonly class StringSmack
             return $this;
         }
 
-        throw SmackException::forConstraint('not empty', $this->value, $this->origin);
+        throw SmackException::forConstraint('not empty', $this->value, $this->trace);
     }
 
     public function isNotBlank(): self
@@ -24,6 +24,6 @@ readonly class StringSmack
             return $this;
         }
 
-        throw SmackException::forConstraint('not blank', $this->value, $this->origin);
+        throw SmackException::forConstraint('not blank', $this->value, $this->trace);
     }
 }

@@ -6,7 +6,7 @@ readonly class BoolSmack
 {
     public function __construct(
         private bool $value,
-        private array $origin,
+        private Trace $trace,
     ) {}
 
     public function isTrue(): void
@@ -15,7 +15,7 @@ readonly class BoolSmack
             return;
         }
 
-        throw SmackException::forConstraint('true', $this->value, $this->origin);
+        throw SmackException::forConstraint('true', $this->value, $this->trace);
     }
 
     public function isFalse(): void
@@ -24,6 +24,6 @@ readonly class BoolSmack
             return;
         }
 
-        throw SmackException::forConstraint('false', $this->value, $this->origin);
+        throw SmackException::forConstraint('false', $this->value, $this->trace);
     }
 }

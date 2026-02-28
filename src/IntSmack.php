@@ -6,7 +6,7 @@ readonly class IntSmack
 {
     public function __construct(
         private int $value,
-        private array $origin,
+        private Trace $trace,
     ) {}
 
     public function isPositive(): self
@@ -15,7 +15,7 @@ readonly class IntSmack
             return $this;
         }
 
-        throw SmackException::forConstraint('positive int', $this->value, $this->origin);
+        throw SmackException::forConstraint('positive int', $this->value, $this->trace);
     }
 
     public function isNegative(): self
@@ -24,6 +24,6 @@ readonly class IntSmack
             return $this;
         }
 
-        throw SmackException::forConstraint('negative int', $this->value, $this->origin);
+        throw SmackException::forConstraint('negative int', $this->value, $this->trace);
     }
 }

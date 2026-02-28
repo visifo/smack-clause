@@ -5,16 +5,19 @@ namespace Visifo\SmackClause;
 readonly class ObjectSmack
 {
     public function __construct(
-        private object $value,
-        private array $origin,
+        private mixed $value,
+        private Trace $trace,
     ) {}
 
+    /**
+     * @param class-string $class
+     */
     public function isInstanceOf(string $class): self
     {
         if ($this->value instanceof $class) {
             return $this;
         }
 
-        throw SmackException::forConstraint('instance of', $this->value, $this->origin);
+        throw SmackException::forConstraint('instance of', $this->value, $this->trace);
     }
 }

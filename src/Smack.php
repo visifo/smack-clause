@@ -6,62 +6,68 @@ readonly class Smack
 {
     public function __construct(
         private mixed $value,
-        private array $origin,
+        private Trace $trace,
     ) {}
 
     public static function that(mixed $value): Smack
     {
-        $origin = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0] ?? [];
-
-        if ($value !== null) {
-            return new Smack($value, $origin);
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $frame = [];
+        if (isset($frames[0]) && is_array($frames[0])) {
+            $frame = $frames[0];
         }
 
-        throw SmackException::forNullValue($origin);
+        $trace = Trace::fromBacktrace($frame);
+
+        if ($value !== null) {
+            return new Smack($value, $trace);
+        }
+
+        throw SmackException::forNullValue($trace);
     }
 
     public function isBool(): BoolSmack
     {
         if (is_bool($this->value)) {
-            return new BoolSmack($this->value, $this->origin);
+            return new BoolSmack($this->value, $this->trace);
         }
 
-        throw SmackException::forExpectedType('bool', $this->value, $this->origin);
+        throw SmackException::forExpectedType('bool', $this->value, $this->trace);
     }
 
     public function isString(): StringSmack
     {
         if (is_string($this->value)) {
-            return new StringSmack($this->value, $this->origin);
+            return new StringSmack($this->value, $this->trace);
         }
 
-        throw SmackException::forExpectedType('string', $this->value, $this->origin);
+        throw SmackException::forExpectedType('string', $this->value, $this->trace);
     }
 
     public function isInt(): IntSmack
     {
         if (is_int($this->value)) {
-            return new IntSmack($this->value, $this->origin);
+            return new IntSmack($this->value, $this->trace);
         }
 
-        throw SmackException::forExpectedType('int', $this->value, $this->origin);
+        throw SmackException::forExpectedType('int', $this->value, $this->trace);
     }
 
     public function isFloat(): FloatSmack
     {
         if (is_float($this->value)) {
-            return new FloatSmack($this->value, $this->origin);
+            return new FloatSmack($this->value, $this->trace);
         }
 
-        throw SmackException::forExpectedType('float', $this->value, $this->origin);
+        throw SmackException::forExpectedType('float', $this->value, $this->trace);
     }
 
     public function isObject(): ObjectSmack
     {
         if (is_object($this->value)) {
-            return new ObjectSmack($this->value, $this->origin);
+            return new ObjectSmack($this->value, $this->trace);
         }
 
-        throw SmackException::forExpectedType('object', $this->value, $this->origin);
+        throw SmackException::forExpectedType('object', $this->value, $this->trace);
     }
 }
