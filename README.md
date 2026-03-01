@@ -44,12 +44,75 @@ Smack::that($userIDs)->each()->isInt()->isPositive();
 ```
 
 ## Custom Smacks
-Extend the library with your own logic:
+Extend the library with your own logic while keeping `Smack::that(...)->...` syntax.
 
 ```php
-Smack::register('isVat', fn($val) => str_starts_with($val, 'DE'));
+use App\Smack\PlayerSmack;
+use App\Smack\Provider\GameSmackProvider;
+use Visifo\SmackClause\Smack;
 
-Smack::that($vat)->isVat();
+Smack::registerProvider(new GameSmackProvider());
+
+Smack::that($player)
+    ->isPlayer()
+    ->isNotUn()
+    ->isInPlayState();
+```
+
+You can register one-off methods directly:
+
+```php
+Smack::register('isVat', function (mixed $value, Trace $trace): VatSmack {
+    if (! is_string($value)) {
+        throw SmackException::forExpectedType('string', $value, $trace);
+    }
+
+    return new VatSmack($value, $trace);
+});
+```
+
+Provider contract:
+
+```php
+use Visifo\SmackClause\SmackProviderInterface;
+use Visifo\SmackClause\SmackRegistry;
+
+final class GameSmackProvider implements SmackProviderInterface
+{
+    public function register(SmackRegistry $registry): void
+    {
+        $registry->register('isPlayer', function (mixed $value, Trace $trace): PlayerSmack {
+            if (! $value instanceof GamePlayer) {
+                throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+            }
+
+            return new PlayerSmack($value, $trace);
+        });
+    }
+}
+```
+
+`CustomSmack` can be used as a base class for domain smacks:
+
+```php
+use Visifo\SmackClause\CustomSmack;
+
+final readonly class PlayerSmack extends CustomSmack
+{
+    public function __construct(
+        private GamePlayer $player,
+        Trace $trace,
+    ) {
+        parent::__construct($trace);
+    }
+
+    public function isNotUn(): self
+    {
+        $this->ensure(! $this->player->isUn(), 'not UN', $this->player);
+
+        return $this;
+    }
+}
 ```
 
 ## The Violation Report

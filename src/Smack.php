@@ -2,6 +2,8 @@
 
 namespace Visifo\SmackClause;
 
+use BadMethodCallException;
+
 readonly class Smack
 {
     public function __construct(
@@ -24,6 +26,32 @@ readonly class Smack
         }
 
         throw SmackException::forNullValue($trace);
+    }
+
+    /**
+     * @param callable(mixed, Trace, mixed...): mixed $resolver
+     */
+    public static function register(string $name, callable $resolver): void
+    {
+        self::registry()->register($name, $resolver);
+    }
+
+    public static function registerProvider(SmackProviderInterface $provider): void
+    {
+        $provider->register(self::registry());
+    }
+
+    /**
+     * @param array<array-key, mixed> $arguments
+     */
+    public function __call(string $name, array $arguments): mixed
+    {
+        $resolver = self::registry()->resolve($name);
+        if ($resolver === null) {
+            throw new BadMethodCallException(sprintf('Smack method `%s` is not registered.', $name));
+        }
+
+        return $resolver($this->value, $this->trace, ...$arguments);
     }
 
     public function isBool(): BoolSmack
@@ -69,5 +97,16 @@ readonly class Smack
         }
 
         throw SmackException::forExpectedType('object', $this->value, $this->trace);
+    }
+
+    private static function registry(): SmackRegistry
+    {
+        static $registry;
+
+        if (! $registry instanceof SmackRegistry) {
+            $registry = new SmackRegistry;
+        }
+
+        return $registry;
     }
 }
