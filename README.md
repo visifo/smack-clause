@@ -48,10 +48,15 @@ Extend the library with your own logic while keeping `Smack::that(...)->...` syn
 
 ```php
 use App\Smack\PlayerSmack;
-use App\Smack\Provider\GameSmackProvider;
 use Visifo\SmackClause\Smack;
 
-Smack::registerProvider(new GameSmackProvider());
+Smack::register('isPlayer', function (mixed $value, Trace $trace): PlayerSmack {
+    if (! $value instanceof GamePlayer) {
+        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+    }
+
+    return new PlayerSmack($value, $trace);
+});
 
 Smack::that($player)
     ->isPlayer()
@@ -59,7 +64,7 @@ Smack::that($player)
     ->isInPlayState();
 ```
 
-You can register one-off methods directly:
+You can register as many project-specific root methods as you need:
 
 ```php
 Smack::register('isVat', function (mixed $value, Trace $trace): VatSmack {
@@ -69,27 +74,6 @@ Smack::register('isVat', function (mixed $value, Trace $trace): VatSmack {
 
     return new VatSmack($value, $trace);
 });
-```
-
-Provider contract:
-
-```php
-use Visifo\SmackClause\SmackProviderInterface;
-use Visifo\SmackClause\SmackRegistry;
-
-final class GameSmackProvider implements SmackProviderInterface
-{
-    public function register(SmackRegistry $registry): void
-    {
-        $registry->register('isPlayer', function (mixed $value, Trace $trace): PlayerSmack {
-            if (! $value instanceof GamePlayer) {
-                throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
-            }
-
-            return new PlayerSmack($value, $trace);
-        });
-    }
-}
 ```
 
 `CustomSmack` can be used as a base class for domain smacks:

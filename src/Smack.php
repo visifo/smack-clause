@@ -36,11 +36,6 @@ readonly class Smack
         self::registry()->register($name, $resolver);
     }
 
-    public static function registerProvider(SmackProviderInterface $provider): void
-    {
-        $provider->register(self::registry());
-    }
-
     /**
      * @param array<array-key, mixed> $arguments
      */
