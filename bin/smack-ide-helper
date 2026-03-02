@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+$autoloadCandidates = [];
+if (isset($_composer_autoload_path) && is_string($_composer_autoload_path)) {
+    $autoloadCandidates[] = $_composer_autoload_path;
+}
+$autoloadCandidates[] = __DIR__.'/../vendor/autoload.php';
+$autoloadCandidates[] = getcwd().'/vendor/autoload.php';
+
+$autoloadPath = null;
+foreach ($autoloadCandidates as $candidate) {
+    if (is_file($candidate)) {
+        $autoloadPath = $candidate;
+        break;
+    }
+}
+
+if ($autoloadPath === null) {
+    fwrite(STDERR, "smack-ide-helper failed: Could not locate vendor/autoload.php\n");
+
+    exit(1);
+}
+
+require_once $autoloadPath;
+
+exit(\Visifo\SmackClause\IdeHelperCommand::run(array_slice($_SERVER['argv'], 1)));

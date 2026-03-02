@@ -106,6 +106,37 @@ final readonly class PlayerSmack extends CustomSmack
 
 See [docs/examples/PlayerSmack.php](docs/examples/PlayerSmack.php) for a complete example.
 
+## IDE Helper
+For dynamic custom methods (`isPlayer()`, `isVat()`, ...), generate a typed helper class for IDE/static tooling:
+
+```bash
+vendor/bin/smack-ide-helper
+```
+
+Available parameters:
+
+- `--root=<path>`
+  - Default: current working directory (`getcwd()`).
+  - Purpose: project root used for `composer.json`, autoload, and output file location.
+- `--scan=<path>`
+  - Default: all `autoload.psr-4` directories from `<root>/composer.json`.
+  - Purpose: limit scanning to specific directory.
+  - Notes: can be passed multiple times; when provided, only these directories are scanned.
+
+This command generates `_smack_ide_helper.php` in your project root with `App\\Smack\\ProjectSmack` and `@method` annotations for each registered custom smack method.
+
+Use it in your project code when you want static tooling support:
+
+```php
+use App\Smack\ProjectSmack;
+
+ProjectSmack::that($player)
+    ->isPlayer()
+    ->isNotUn();
+```
+
+The generator is strict and fails if any `CustomSmack` implementation is invalid (missing `#[SmackMethod('...')]`, duplicate method name, invalid class, etc.).
+
 ## The Violation Report
 When a check fails, `SmackViolation` *(extends `InvalidArgumentException`)* gives you the forensics:
 - **Path**: The variable or nested key name.

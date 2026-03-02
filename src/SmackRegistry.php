@@ -38,6 +38,13 @@ final class SmackRegistry
             ));
         }
 
+        if (count($attributes) > 1) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must declare exactly one `#[SmackMethod(\"...\")]` attribute.',
+                $smackClass,
+            ));
+        }
+
         $name = $attributes[0]->newInstance()->name;
 
         if ($name === '') {
@@ -54,6 +61,13 @@ final class SmackRegistry
 
         if (isset($this->methods[$name])) {
             throw new InvalidArgumentException(sprintf('Smack method `%s` is already registered.', $name));
+        }
+
+        if (! $reflection->hasMethod('fromSmack')) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must define a public static `fromSmack` method.',
+                $smackClass,
+            ));
         }
 
         // TODO check unnecessary?
@@ -74,5 +88,13 @@ final class SmackRegistry
     public function resolve(string $name): ?string
     {
         return $this->methods[$name] ?? null;
+    }
+
+    /**
+     * @return array<string, class-string<CustomSmack>>
+     */
+    public function all(): array
+    {
+        return $this->methods;
     }
 }

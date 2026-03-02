@@ -39,6 +39,9 @@
             "Visifo\\SmackClause\\Tests\\": "tests"
         }
     },
+    "bin": [
+        "bin/smack-ide-helper"
+    ],
     "scripts": {
         "test": "vendor/bin/pest --compact",
         "test-coverage": "vendor/bin/pest --coverage",
