@@ -4,6 +4,9 @@ namespace Visifo\SmackClause;
 
 use BadMethodCallException;
 
+/**
+ * @mixin IdeHelperSmack
+ */
 readonly class Smack
 {
     public function __construct(

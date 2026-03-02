@@ -123,14 +123,14 @@ Available parameters:
   - Purpose: limit scanning to specific directory.
   - Notes: can be passed multiple times; when provided, only these directories are scanned.
 
-This command generates `_smack_ide_helper.php` in your project root with `App\\Smack\\ProjectSmack` and `@method` annotations for each registered custom smack method.
+This command generates `_smack_ide_helper.php` in your project root with a `Visifo\\SmackClause\\IdeHelperSmack` class that contains `@method` annotations for dynamic smack methods. `Smack` is linked to it via `@mixin`.
 
-Use it in your project code when you want static tooling support:
+After generating, static tooling can understand calls like:
 
 ```php
-use App\Smack\ProjectSmack;
+use Visifo\SmackClause\Smack;
 
-ProjectSmack::that($player)
+Smack::that($player)
     ->isPlayer()
     ->isNotUn();
 ```
