@@ -34,3 +34,4 @@ testbench.yaml
 .env
 .DS_Store
 ray.php
+_smack_ide_helper.php
