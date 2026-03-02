@@ -12,9 +12,6 @@ final class SmackRegistry
      */
     private array $methods = [];
 
-    /**
-     * @param class-string<CustomSmack> $smackClass
-     */
     public function register(string $smackClass): void
     {
         if (! class_exists($smackClass)) {

@@ -2,12 +2,9 @@
 
 namespace Visifo\SmackClause;
 
-use FilesystemIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
+use Composer\Autoload\ClassLoader;
 use ReflectionClass;
 use RuntimeException;
-use SplFileInfo;
 use Throwable;
 
 final class IdeHelperCommand
@@ -28,8 +25,9 @@ final class IdeHelperCommand
 
             require_once $autoloadPath;
 
-            $scanPaths = self::resolveScanPaths($root, $config['scan']);
-            $classFiles = self::discoverClassFiles($scanPaths);
+            $loader = self::resolveClassLoader($root);
+            $scanPaths = self::resolveScanPaths($root, $config['scan'], $loader);
+            $classFiles = self::discoverClassFiles($scanPaths, $loader);
 
             $registry = new SmackRegistry;
             foreach ($classFiles as $class => $file) {
@@ -124,7 +122,7 @@ final class IdeHelperCommand
      * @param list<string> $scanOverrides
      * @return list<string>
      */
-    private static function resolveScanPaths(string $root, array $scanOverrides): array
+    private static function resolveScanPaths(string $root, array $scanOverrides, ClassLoader $loader): array
     {
         if ($scanOverrides !== []) {
             $paths = [];
@@ -142,53 +140,25 @@ final class IdeHelperCommand
             return array_values(array_unique($paths));
         }
 
-        $composerFile = $root.'/composer.json';
-        if (! is_file($composerFile)) {
-            throw new RuntimeException(sprintf('Could not find composer.json in `%s`.', $root));
-        }
-
-        $composerJson = file_get_contents($composerFile);
-        if (! is_string($composerJson)) {
-            throw new RuntimeException('Could not read composer.json.');
-        }
-
-        $composer = json_decode($composerJson, true);
-        if (! is_array($composer)) {
-            throw new RuntimeException('composer.json is not valid JSON.');
-        }
-
-        $autoload = $composer['autoload']['psr-4'] ?? null;
-        if (! is_array($autoload)) {
-            throw new RuntimeException('composer.json must contain autoload.psr-4 mappings.');
-        }
+        $autoload = $loader->getPrefixesPsr4();
 
         $paths = [];
-        foreach ($autoload as $prefix => $autoloadPaths) {
-            if (! is_string($prefix)) {
-                continue;
-            }
-
-            if (is_string($autoloadPaths)) {
-                $autoloadPaths = [$autoloadPaths];
-            }
-
-            if (! is_array($autoloadPaths)) {
-                continue;
-            }
-
-            foreach ($autoloadPaths as $autoloadPath) {
-                if (! is_string($autoloadPath)) {
+        foreach ($autoload as $autoloadPaths) {
+            foreach ($autoloadPaths as $autoloadDir) {
+                if ($autoloadDir === '') {
                     continue;
                 }
 
-                if ($autoloadPath === '') {
+                $path = str_starts_with($autoloadDir, '/')
+                    ? rtrim($autoloadDir, '/')
+                    : self::normalizePath($root, $autoloadDir);
+
+                if (! is_dir($path)) {
                     continue;
                 }
 
-                $path = self::normalizePath($root, $autoloadPath);
-                if (is_dir($path)) {
-                    $paths[] = $path;
-                }
+                $resolvedPath = realpath($path);
+                $paths[] = is_string($resolvedPath) ? $resolvedPath : $path;
             }
         }
 
@@ -212,158 +182,67 @@ final class IdeHelperCommand
      * @param list<string> $scanPaths
      * @return array<class-string, string>
      */
-    private static function discoverClassFiles(array $scanPaths): array
+    private static function discoverClassFiles(array $scanPaths, ClassLoader $loader): array
     {
+        $classMap = $loader->getClassMap();
+
         $classFiles = [];
-
-        foreach ($scanPaths as $scanPath) {
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($scanPath, FilesystemIterator::SKIP_DOTS),
-            );
-
-            foreach ($iterator as $fileInfo) {
-                if (! $fileInfo instanceof SplFileInfo) {
-                    continue;
-                }
-
-                if ($fileInfo->getExtension() !== 'php') {
-                    continue;
-                }
-
-                $path = $fileInfo->getPathname();
-                $class = self::extractClassName($path);
-                if ($class === null) {
-                    continue;
-                }
-
-                if (isset($classFiles[$class])) {
-                    throw new RuntimeException(sprintf(
-                        'Class `%s` is declared in multiple files: `%s` and `%s`.',
-                        $class,
-                        $classFiles[$class],
-                        $path,
-                    ));
-                }
-
-                $classFiles[$class] = $path;
+        foreach ($classMap as $class => $file) {
+            if (! str_ends_with($file, '.php')) {
+                continue;
             }
+
+            $path = $file;
+            $resolvedPath = realpath($path);
+            $path = is_string($resolvedPath) ? $resolvedPath : $path;
+
+            if (! self::isPathWithinScanPaths($path, $scanPaths)) {
+                continue;
+            }
+
+            if (isset($classFiles[$class])) {
+                throw new RuntimeException(sprintf(
+                    'Class `%s` is declared in multiple files: `%s` and `%s`.',
+                    $class,
+                    $classFiles[$class],
+                    $path,
+                ));
+            }
+
+            $classFiles[$class] = $path;
         }
 
         return $classFiles;
     }
 
     /**
-     * @return class-string|null
+     * @param list<string> $scanPaths
      */
-    private static function extractClassName(string $path): ?string
+    private static function isPathWithinScanPaths(string $path, array $scanPaths): bool
     {
-        $code = file_get_contents($path);
-        if (! is_string($code)) {
-            throw new RuntimeException(sprintf('Could not read file `%s`.', $path));
-        }
-
-        $tokens = token_get_all($code);
-        $namespace = '';
-        $class = null;
-
-        for ($i = 0, $count = count($tokens); $i < $count; $i++) {
-            $token = $tokens[$i];
-            if (! is_array($token)) {
-                continue;
-            }
-
-            if ($token[0] === T_NAMESPACE) {
-                $namespace = self::readNamespace($tokens, $i + 1);
-                continue;
-            }
-
-            if ($token[0] !== T_CLASS) {
-                continue;
-            }
-
-            $previous = self::previousToken($tokens, $i - 1);
-            if ($previous !== null && in_array($previous, [T_DOUBLE_COLON, T_NEW], true)) {
-                continue;
-            }
-
-            $class = self::readClassName($tokens, $i + 1);
-            if ($class !== null) {
-                break;
-            }
-        }
-
-        if ($class === null) {
-            return null;
-        }
-
-        return $namespace === '' ? $class : $namespace.'\\'.$class;
+        return array_any(
+            $scanPaths,
+            static fn ($scanPath): bool => str_starts_with($path, $scanPath.'/') || $path === $scanPath,
+        );
     }
 
-    /**
-     * @param array<int, mixed> $tokens
-     */
-    private static function readNamespace(array $tokens, int $index): string
+    private static function resolveClassLoader(string $root): ClassLoader
     {
-        $namespace = '';
-
-        for ($i = $index, $count = count($tokens); $i < $count; $i++) {
-            $token = $tokens[$i];
-            if (! is_array($token)) {
-                if ($token === ';' || $token === '{') {
-                    break;
-                }
-
-                continue;
-            }
-
-            if (! in_array($token[0], [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED], true)) {
-                continue;
-            }
-
-            $namespace .= $token[1];
+        $loaders = ClassLoader::getRegisteredLoaders();
+        if ($loaders === []) {
+            throw new RuntimeException('Could not resolve Composer class loader.');
         }
 
-        return $namespace;
-    }
-
-    /**
-     * @param array<int, mixed> $tokens
-     */
-    private static function readClassName(array $tokens, int $index): ?string
-    {
-        for ($i = $index, $count = count($tokens); $i < $count; $i++) {
-            $token = $tokens[$i];
-            if (! is_array($token)) {
+        $rootPrefix = $root.'/vendor/';
+        foreach ($loaders as $vendorDir => $loader) {
+            if (! str_starts_with($vendorDir, $rootPrefix)) {
                 continue;
             }
 
-            if ($token[0] === T_STRING) {
-                return $token[1];
-            }
+            return $loader;
         }
 
-        return null;
-    }
-
-    /**
-     * @param array<int, mixed> $tokens
-     */
-    private static function previousToken(array $tokens, int $index): ?int
-    {
-        for ($i = $index; $i >= 0; $i--) {
-            $token = $tokens[$i];
-            if (! is_array($token)) {
-                continue;
-            }
-
-            if (in_array($token[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)) {
-                continue;
-            }
-
-            return $token[0];
-        }
-
-        return null;
+        return array_first($loaders);
     }
 
     /**
