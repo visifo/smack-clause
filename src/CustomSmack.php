@@ -8,6 +8,12 @@ abstract readonly class CustomSmack
         protected Trace $trace,
     ) {}
 
+    abstract public static function fromSmack(
+        mixed $value,
+        Trace $trace,
+        mixed ...$arguments,
+    ): static;
+
     final protected function ensure(bool $condition, string $constraint, mixed $actualValue): void
     {
         if ($condition) {

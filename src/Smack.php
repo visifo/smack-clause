@@ -29,11 +29,11 @@ readonly class Smack
     }
 
     /**
-     * @param callable(mixed, Trace, mixed...): mixed $resolver
+     * @param class-string<CustomSmack> $smackClass
      */
-    public static function register(string $name, callable $resolver): void
+    public static function register(string $smackClass): void
     {
-        self::registry()->register($name, $resolver);
+        self::registry()->register($smackClass);
     }
 
     /**
@@ -41,12 +41,12 @@ readonly class Smack
      */
     public function __call(string $name, array $arguments): mixed
     {
-        $resolver = self::registry()->resolve($name);
-        if ($resolver === null) {
+        $smackClass = self::registry()->resolve($name);
+        if ($smackClass === null) {
             throw new BadMethodCallException(sprintf('Smack method `%s` is not registered.', $name));
         }
 
-        return $resolver($this->value, $this->trace, ...$arguments);
+        return $smackClass::fromSmack($this->value, $this->trace, ...$arguments);
     }
 
     public function isBool(): BoolSmack

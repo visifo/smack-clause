@@ -50,13 +50,7 @@ Extend the library with your own logic while keeping `Smack::that(...)->...` syn
 use App\Smack\PlayerSmack;
 use Visifo\SmackClause\Smack;
 
-Smack::register('isPlayer', function (mixed $value, Trace $trace): PlayerSmack {
-    if (! $value instanceof GamePlayer) {
-        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
-    }
-
-    return new PlayerSmack($value, $trace);
-});
+Smack::register(PlayerSmack::class);
 
 Smack::that($player)
     ->isPlayer()
@@ -64,23 +58,22 @@ Smack::that($player)
     ->isInPlayState();
 ```
 
-You can register as many project-specific root methods as you need:
+You can register as many project-specific root methods as you need, one class at a time:
 
 ```php
-Smack::register('isVat', function (mixed $value, Trace $trace): VatSmack {
-    if (! is_string($value)) {
-        throw SmackException::forExpectedType('string', $value, $trace);
-    }
-
-    return new VatSmack($value, $trace);
-});
+Smack::register(PlayerSmack::class);
+Smack::register(VatSmack::class);
 ```
 
-`CustomSmack` can be used as a base class for domain smacks:
+`CustomSmack` is the base class for domain smacks. Add `#[SmackMethod('...')]` on the class and implement `fromSmack(...)`:
 
 ```php
 use Visifo\SmackClause\CustomSmack;
+use Visifo\SmackClause\SmackException;
+use Visifo\SmackClause\SmackMethod;
+use Visifo\SmackClause\Trace;
 
+#[SmackMethod('isPlayer')]
 final readonly class PlayerSmack extends CustomSmack
 {
     public function __construct(
@@ -88,6 +81,18 @@ final readonly class PlayerSmack extends CustomSmack
         Trace $trace,
     ) {
         parent::__construct($trace);
+    }
+
+    public static function fromSmack(
+        mixed $value,
+        Trace $trace,
+        mixed ...$arguments,
+    ): static {
+        if (! $value instanceof GamePlayer) {
+            throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+        }
+
+        return new self($value, $trace);
     }
 
     public function isNotUn(): self
@@ -98,6 +103,8 @@ final readonly class PlayerSmack extends CustomSmack
     }
 }
 ```
+
+See [docs/examples/PlayerSmack.php](docs/examples/PlayerSmack.php) for a complete example.
 
 ## The Violation Report
 When a check fails, `SmackViolation` *(extends `InvalidArgumentException`)* gives you the forensics:

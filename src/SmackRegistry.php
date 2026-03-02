@@ -3,16 +3,43 @@
 namespace Visifo\SmackClause;
 
 use InvalidArgumentException;
+use ReflectionClass;
 
 final class SmackRegistry
 {
     /**
-     * @var array<string, callable(mixed, Trace, mixed...): mixed>
+     * @var array<string, class-string<CustomSmack>>
      */
     private array $methods = [];
 
-    public function register(string $name, callable $resolver): void
+    /**
+     * @param class-string<CustomSmack> $smackClass
+     */
+    public function register(string $smackClass): void
     {
+        if (! class_exists($smackClass)) {
+            throw new InvalidArgumentException(sprintf('Smack class `%s` does not exist.', $smackClass));
+        }
+
+        if (! is_subclass_of($smackClass, CustomSmack::class)) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must extend `%s`.',
+                $smackClass,
+                CustomSmack::class,
+            ));
+        }
+
+        $reflection = new ReflectionClass($smackClass);
+        $attributes = $reflection->getAttributes(SmackMethod::class);
+        if ($attributes === []) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must declare `#[SmackMethod(\"...\")]`.',
+                $smackClass,
+            ));
+        }
+
+        $name = $attributes[0]->newInstance()->name;
+
         if ($name === '') {
             throw new InvalidArgumentException('Smack method name must not be empty.');
         }
@@ -29,13 +56,22 @@ final class SmackRegistry
             throw new InvalidArgumentException(sprintf('Smack method `%s` is already registered.', $name));
         }
 
-        $this->methods[$name] = $resolver;
+        // TODO check unnecessary?
+        $constructor = $reflection->getMethod('fromSmack');
+        if (! $constructor->isPublic() || ! $constructor->isStatic()) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must define a public static `fromSmack` method.',
+                $smackClass,
+            ));
+        }
+
+        $this->methods[$name] = $smackClass;
     }
 
     /**
-     * @return callable(mixed, Trace, mixed...): mixed|null
+     * @return class-string<CustomSmack>|null
      */
-    public function resolve(string $name): ?callable
+    public function resolve(string $name): ?string
     {
         return $this->methods[$name] ?? null;
     }
