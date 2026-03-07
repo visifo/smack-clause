@@ -6,7 +6,7 @@ function smackCreateTempProjectRoot(): string
     mkdir($root, 0o777, true);
     mkdir($root.'/vendor', 0o777, true);
 
-    $autoload = realpath(__DIR__.'/../../vendor/autoload.php');
+    $autoload = realpath(__DIR__.'/../../../vendor/autoload.php');
     if (! is_string($autoload)) {
         throw new RuntimeException('Could not resolve vendor/autoload.php for tests.');
     }
