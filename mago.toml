@@ -40,4 +40,6 @@ ignore = [
   "unhandled-thrown-type",
   { code = "mixed-method-access", in = "tests/" },
   { code = "mixed-property-access", in = "tests/" },
+  { code = "unused-property", in = "tests/" },
+  { code = "non-documented-method", in = "tests/" },
 ]

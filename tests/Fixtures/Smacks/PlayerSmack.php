@@ -2,6 +2,7 @@
 
 namespace Visifo\SmackClause\Tests\Fixtures\Smacks;
 
+use Override;
 use Visifo\SmackClause\CustomSmack;
 use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\SmackMethod;
@@ -17,6 +18,7 @@ final readonly class PlayerSmack extends CustomSmack
         parent::__construct($trace);
     }
 
+    #[Override]
     public static function fromSmack(
         mixed $value,
         Trace $trace,

@@ -2,6 +2,7 @@
 
 namespace Visifo\SmackClause\Tests\Fixtures\InvalidSmacks;
 
+use Override;
 use Visifo\SmackClause\CustomSmack;
 use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\SmackMethod;
@@ -11,13 +12,7 @@ use Visifo\SmackClause\Trace;
 #[SmackMethod('isString')]
 final readonly class ReservedMethodNameSmack extends CustomSmack
 {
-    public function __construct(
-        private GamePlayer $player,
-        Trace $trace,
-    ) {
-        parent::__construct($trace);
-    }
-
+    #[Override]
     public static function fromSmack(
         mixed $value,
         Trace $trace,
@@ -27,6 +22,6 @@ final readonly class ReservedMethodNameSmack extends CustomSmack
             throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
         }
 
-        return new self($value, $trace);
+        return new self($trace);
     }
 }

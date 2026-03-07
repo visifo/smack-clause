@@ -22,11 +22,12 @@ describe('ide helper command', function (): void {
             expect($helperFile)->toBeFile();
 
             $content = file_get_contents($helperFile);
-            expect($content)->toBeString();
-            expect($content)->toContain('final class IdeHelperSmack {}');
-            expect($content)->toContain(
-                '@method \\Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\PlayerSmack isPlayer()',
-            );
+            expect($content)
+                ->toBeString()
+                ->toContain('final class IdeHelperSmack {}')
+                ->toContain(
+                    '@method \\Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\PlayerSmack isPlayer()',
+                );
         } finally {
             smackDeleteDirectory($root);
         }
@@ -73,7 +74,7 @@ describe('ide helper command', function (): void {
 
         $loader = array_first(ClassLoader::getRegisteredLoaders());
         expect($loader)->toBeInstanceOf(ClassLoader::class);
-        class_exists(SmackRegistry::class);
+        expect(class_exists(SmackRegistry::class))->toBeTrue();
 
         if (! $loader instanceof ClassLoader) {
             smackDeleteDirectory($root);
