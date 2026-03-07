@@ -104,7 +104,7 @@ final readonly class PlayerSmack extends CustomSmack
 }
 ```
 
-See [docs/examples/PlayerSmack.php](docs/examples/PlayerSmack.php) for a complete example.
+See [tests/Fixtures/Smacks/PlayerSmack.php](tests/Fixtures/Smacks/PlayerSmack.php) for a complete example.
 
 ## IDE Helper
 For dynamic custom methods (`isPlayer()`, `isVat()`, ...), generate a typed helper class for IDE/static tooling:

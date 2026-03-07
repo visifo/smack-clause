@@ -3,8 +3,12 @@
 namespace Visifo\SmackClause;
 
 use Composer\Autoload\ClassLoader;
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionClass;
 use RuntimeException;
+use SplFileInfo;
 use Throwable;
 
 final class IdeHelperCommand
@@ -184,32 +188,54 @@ final class IdeHelperCommand
      */
     private static function discoverClassFiles(array $scanPaths, ClassLoader $loader): array
     {
-        $classMap = $loader->getClassMap();
-
         $classFiles = [];
-        foreach ($classMap as $class => $file) {
-            if (! str_ends_with($file, '.php')) {
-                continue;
+        $prefixes = $loader->getPrefixesPsr4();
+        foreach ($prefixes as $prefix => $prefixPaths) {
+            foreach ($prefixPaths as $prefixPath) {
+                if ($prefixPath === '') {
+                    continue;
+                }
+
+                $resolvedPrefixPath = realpath($prefixPath);
+                $basePath = is_string($resolvedPrefixPath) ? rtrim($resolvedPrefixPath, '/') : rtrim($prefixPath, '/');
+                if (! is_dir($basePath) || ! self::isPathWithinScanPaths($basePath, $scanPaths)) {
+                    continue;
+                }
+
+                $iterator = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($basePath, FilesystemIterator::SKIP_DOTS),
+                );
+
+                foreach ($iterator as $fileInfo) {
+                    if (! $fileInfo instanceof SplFileInfo || $fileInfo->getExtension() !== 'php') {
+                        continue;
+                    }
+
+                    $path = $fileInfo->getPathname();
+                    $relativePath = substr($path, strlen($basePath) + 1);
+                    if (! is_string($relativePath) || ! str_ends_with($relativePath, '.php')) {
+                        continue;
+                    }
+
+                    $classSuffix = substr($relativePath, 0, -4);
+                    if (! is_string($classSuffix)) {
+                        continue;
+                    }
+
+                    $class = $prefix.str_replace(['/', '\\'], '\\', $classSuffix);
+                    if (isset($classFiles[$class])) {
+                        throw new RuntimeException(sprintf(
+                            'Class `%s` is declared in multiple files: `%s` and `%s`.',
+                            $class,
+                            $classFiles[$class],
+                            $path,
+                        ));
+                    }
+
+                    /** @var class-string $class */
+                    $classFiles[$class] = $path;
+                }
             }
-
-            $path = $file;
-            $resolvedPath = realpath($path);
-            $path = is_string($resolvedPath) ? $resolvedPath : $path;
-
-            if (! self::isPathWithinScanPaths($path, $scanPaths)) {
-                continue;
-            }
-
-            if (isset($classFiles[$class])) {
-                throw new RuntimeException(sprintf(
-                    'Class `%s` is declared in multiple files: `%s` and `%s`.',
-                    $class,
-                    $classFiles[$class],
-                    $path,
-                ));
-            }
-
-            $classFiles[$class] = $path;
         }
 
         return $classFiles;

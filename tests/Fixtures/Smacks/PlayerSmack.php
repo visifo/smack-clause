@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Visifo\SmackClause\Examples;
+namespace Visifo\SmackClause\Tests\Fixtures\Smacks;
 
 use Visifo\SmackClause\CustomSmack;
-use Visifo\SmackClause\Smack;
 use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\SmackMethod;
 use Visifo\SmackClause\Trace;
@@ -44,38 +43,3 @@ final readonly class PlayerSmack extends CustomSmack
         return $this;
     }
 }
-
-readonly class GamePlayer
-{
-    public function __construct(
-        private bool $un,
-        public Game $game,
-    ) {}
-
-    public function isUn(): bool
-    {
-        return $this->un;
-    }
-}
-
-readonly class Game
-{
-    public function __construct(
-        private bool $inPlayState,
-    ) {}
-
-    public function isInPlayState(): bool
-    {
-        return $this->inPlayState;
-    }
-}
-
-// Example usage:
-Smack::register(PlayerSmack::class);
-
-$player = new GamePlayer(un: false, game: new Game(inPlayState: true));
-
-Smack::that($player)
-    ->isPlayer()
-    ->isNotUn()
-    ->isInPlayState();

@@ -67,7 +67,6 @@ final class SmackRegistry
             ));
         }
 
-        // TODO check unnecessary?
         $constructor = $reflection->getMethod('fromSmack');
         if (! $constructor->isPublic() || ! $constructor->isStatic()) {
             throw new InvalidArgumentException(sprintf(
