@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Visifo\SmackClause;
+namespace Visifo\SmackClause\Extension;
 
 use InvalidArgumentException;
 use ReflectionClass;
+use Visifo\SmackClause\Smack;
 
 final class SmackRegistry
 {

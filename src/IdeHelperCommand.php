@@ -10,6 +10,8 @@ use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
 use Throwable;
+use Visifo\SmackClause\Extension\CustomSmack;
+use Visifo\SmackClause\Extension\SmackRegistry;
 
 final class IdeHelperCommand
 {

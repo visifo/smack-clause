@@ -68,7 +68,7 @@ Smack::register(VatSmack::class);
 `CustomSmack` is the base class for domain smacks. Add `#[SmackMethod('...')]` on the class and implement `fromSmack(...)`:
 
 ```php
-use Visifo\SmackClause\CustomSmack;use Visifo\SmackClause\Exception\SmackException;use Visifo\SmackClause\Exception\Trace;use Visifo\SmackClause\SmackMethod;
+use Visifo\SmackClause\Exception\SmackException;use Visifo\SmackClause\Exception\Trace;use Visifo\SmackClause\Extension\CustomSmack;use Visifo\SmackClause\Extension\SmackMethod;
 
 #[SmackMethod('isPlayer')]
 final readonly class PlayerSmack extends CustomSmack

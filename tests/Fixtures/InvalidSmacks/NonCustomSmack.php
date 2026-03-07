@@ -2,7 +2,7 @@
 
 namespace Visifo\SmackClause\Tests\Fixtures\InvalidSmacks;
 
-use Visifo\SmackClause\SmackMethod;
+use Visifo\SmackClause\Extension\SmackMethod;
 
 #[SmackMethod('isNonCustomSmack')]
 final readonly class NonCustomSmack {}

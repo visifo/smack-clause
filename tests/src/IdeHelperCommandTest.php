@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
 use Composer\Autoload\ClassLoader;
+use Visifo\SmackClause\Extension\SmackRegistry;
 use Visifo\SmackClause\IdeHelperCommand;
-use Visifo\SmackClause\SmackRegistry;
 
 describe('ide helper command', function (): void {
     it('generates helper file for valid custom smacks', function (): void {

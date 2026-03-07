@@ -3,10 +3,10 @@
 namespace Visifo\SmackClause\Tests\Fixtures\InvalidSmacks;
 
 use Override;
-use Visifo\SmackClause\CustomSmack;
 use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Exception\Trace;
-use Visifo\SmackClause\SmackMethod;
+use Visifo\SmackClause\Extension\CustomSmack;
+use Visifo\SmackClause\Extension\SmackMethod;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\GamePlayer;
 
 #[SmackMethod('isString')]

@@ -5,6 +5,8 @@ namespace Visifo\SmackClause;
 use BadMethodCallException;
 use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Exception\Trace;
+use Visifo\SmackClause\Extension\CustomSmack;
+use Visifo\SmackClause\Extension\SmackRegistry;
 
 /**
  * @mixin IdeHelperSmack
