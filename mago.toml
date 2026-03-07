@@ -42,4 +42,5 @@ ignore = [
   { code = "mixed-property-access", in = "tests/" },
   { code = "unused-property", in = "tests/" },
   { code = "non-documented-method", in = "tests/" },
+  { code = "mixed-assignment", in = "tests/" },
 ]

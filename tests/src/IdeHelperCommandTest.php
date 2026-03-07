@@ -8,7 +8,9 @@ describe('ide helper command', function (): void {
     it('generates helper file for valid custom smacks', function (): void {
         $root = smackCreateTempProjectRoot();
         $validScanPath = realpath(__DIR__.'/../Fixtures/Smacks');
-        expect($validScanPath)->toBeString();
+        if ($validScanPath === false) {
+            throw new RuntimeException('Unable to resolve valid fixture path.');
+        }
 
         try {
             $exitCode = IdeHelperCommand::run([
@@ -52,7 +54,9 @@ describe('ide helper command', function (): void {
     it('fails strictly for invalid custom smacks', function (): void {
         $root = smackCreateTempProjectRoot();
         $invalidScanPath = realpath(__DIR__.'/../Fixtures/InvalidSmacks');
-        expect($invalidScanPath)->toBeString();
+        if ($invalidScanPath === false) {
+            throw new RuntimeException('Unable to resolve invalid fixture path.');
+        }
 
         try {
             $exitCode = IdeHelperCommand::run([
@@ -70,7 +74,9 @@ describe('ide helper command', function (): void {
     it('works when class map is authoritative (optimized mode simulation)', function (): void {
         $root = smackCreateTempProjectRoot();
         $validScanPath = realpath(__DIR__.'/../Fixtures/Smacks');
-        expect($validScanPath)->toBeString();
+        if ($validScanPath === false) {
+            throw new RuntimeException('Unable to resolve valid fixture path.');
+        }
 
         $loader = array_first(ClassLoader::getRegisteredLoaders());
         expect($loader)->toBeInstanceOf(ClassLoader::class);
