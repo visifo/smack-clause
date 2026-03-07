@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
+use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\Game;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\GamePlayer;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\PlayerSmack;

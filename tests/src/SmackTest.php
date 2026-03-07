@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\BoolSmack;
+use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\FloatSmack;
 use Visifo\SmackClause\IntSmack;
 use Visifo\SmackClause\ObjectSmack;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\StringSmack;
 
 describe('that', function (): void {

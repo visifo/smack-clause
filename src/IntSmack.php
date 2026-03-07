@@ -2,6 +2,9 @@
 
 namespace Visifo\SmackClause;
 
+use Visifo\SmackClause\Exception\SmackException;
+use Visifo\SmackClause\Exception\Trace;
+
 readonly class IntSmack
 {
     public function __construct(

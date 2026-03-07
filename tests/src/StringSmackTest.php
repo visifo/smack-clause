@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
+use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\SmackException;
 use Visifo\SmackClause\StringSmack;
 
 describe('isNotEmpty', function (): void {

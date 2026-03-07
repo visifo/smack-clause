@@ -3,6 +3,8 @@
 namespace Visifo\SmackClause;
 
 use BadMethodCallException;
+use Visifo\SmackClause\Exception\SmackException;
+use Visifo\SmackClause\Exception\Trace;
 
 /**
  * @mixin IdeHelperSmack

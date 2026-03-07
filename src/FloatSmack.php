@@ -2,6 +2,9 @@
 
 namespace Visifo\SmackClause;
 
+use Visifo\SmackClause\Exception\SmackException;
+use Visifo\SmackClause\Exception\Trace;
+
 readonly class FloatSmack
 {
     public function __construct(

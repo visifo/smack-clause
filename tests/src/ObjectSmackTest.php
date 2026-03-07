@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
+use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\ObjectSmack;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\SmackException;
 
 describe('isInstanceOf', function (): void {
     it('throws for non-matching class', function (): void {
