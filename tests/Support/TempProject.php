@@ -3,12 +3,12 @@
 function smackCreateTempProjectRoot(): string
 {
     $root = sys_get_temp_dir().'/smack-ide-helper-'.bin2hex(random_bytes(8));
-    mkdir($root, 0777, true);
-    mkdir($root.'/vendor', 0777, true);
+    mkdir($root, 0o777, true);
+    mkdir($root.'/vendor', 0o777, true);
 
     $autoload = realpath(__DIR__.'/../../vendor/autoload.php');
     if (! is_string($autoload)) {
-        throw new \RuntimeException('Could not resolve vendor/autoload.php for tests.');
+        throw new RuntimeException('Could not resolve vendor/autoload.php for tests.');
     }
 
     $autoloadProxy = sprintf("<?php require_once '%s';\n", addslashes($autoload));
@@ -23,9 +23,9 @@ function smackDeleteDirectory(string $path): void
         return;
     }
 
-    $iterator = new \RecursiveIteratorIterator(
-        new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
-        \RecursiveIteratorIterator::CHILD_FIRST,
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST,
     );
 
     foreach ($iterator as $item) {

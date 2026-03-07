@@ -207,7 +207,11 @@ final class IdeHelperCommand
                 );
 
                 foreach ($iterator as $fileInfo) {
-                    if (! $fileInfo instanceof SplFileInfo || $fileInfo->getExtension() !== 'php') {
+                    if (! $fileInfo instanceof SplFileInfo) {
+                        continue;
+                    }
+
+                    if ($fileInfo->getExtension() !== 'php') {
                         continue;
                     }
 
@@ -217,7 +221,7 @@ final class IdeHelperCommand
                     }
 
                     $relativePath = substr($path, strlen($basePath) + 1);
-                    if (! is_string($relativePath) || ! str_ends_with($relativePath, '.php')) {
+                    if (! str_ends_with($relativePath, '.php')) {
                         continue;
                     }
 

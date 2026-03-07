@@ -9,13 +9,6 @@ use Visifo\SmackClause\Trace;
 
 final readonly class MissingAttributeSmack extends CustomSmack
 {
-    public function __construct(
-        private GamePlayer $player,
-        Trace $trace,
-    ) {
-        parent::__construct($trace);
-    }
-
     public static function fromSmack(
         mixed $value,
         Trace $trace,

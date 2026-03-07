@@ -19,12 +19,14 @@ describe('ide helper command', function (): void {
             expect($exitCode)->toBe(0);
 
             $helperFile = $root.'/_smack_ide_helper.php';
-            expect(is_file($helperFile))->toBeTrue();
+            expect($helperFile)->toBeFile();
 
             $content = file_get_contents($helperFile);
             expect($content)->toBeString();
             expect($content)->toContain('final class IdeHelperSmack {}');
-            expect($content)->toContain('@method \\Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\PlayerSmack isPlayer()');
+            expect($content)->toContain(
+                '@method \\Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\PlayerSmack isPlayer()',
+            );
         } finally {
             smackDeleteDirectory($root);
         }
@@ -75,6 +77,7 @@ describe('ide helper command', function (): void {
 
         if (! $loader instanceof ClassLoader) {
             smackDeleteDirectory($root);
+
             return;
         }
 
@@ -88,7 +91,7 @@ describe('ide helper command', function (): void {
             ]);
 
             expect($exitCode)->toBe(0);
-            expect(is_file($root.'/_smack_ide_helper.php'))->toBeTrue();
+            expect($root.'/_smack_ide_helper.php')->toBeFile();
         } finally {
             $loader->setClassMapAuthoritative($previous);
             smackDeleteDirectory($root);

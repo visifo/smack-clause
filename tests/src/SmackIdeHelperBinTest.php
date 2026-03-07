@@ -27,7 +27,7 @@ describe('smack-ide-helper bin', function (): void {
 
             expect($exitCode)->toBe(0);
             expect(implode("\n", $output))->toContain('Generated 1 method annotation');
-            expect(is_file($root.'/_smack_ide_helper.php'))->toBeTrue();
+            expect($root.'/_smack_ide_helper.php')->toBeFile();
         } finally {
             smackDeleteDirectory($root);
         }

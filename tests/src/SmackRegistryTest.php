@@ -5,8 +5,8 @@ use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\DuplicatePlayerSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\InvalidMethodNameSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\MissingAttributeSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\NonCustomSmack;
-use Visifo\SmackClause\Tests\Fixtures\Smacks\PlayerSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\ReservedMethodNameSmack;
+use Visifo\SmackClause\Tests\Fixtures\Smacks\PlayerSmack;
 
 describe('register', function (): void {
     it('registers valid custom smack', function (): void {
