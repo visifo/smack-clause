@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-use Visifo\SmackClause\BoolSmack;
 use Visifo\SmackClause\Exception\SmackException;
-use Visifo\SmackClause\FloatSmack;
-use Visifo\SmackClause\IntSmack;
-use Visifo\SmackClause\ObjectSmack;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\StringSmack;
+use Visifo\SmackClause\Types\BoolSmack;
+use Visifo\SmackClause\Types\FloatSmack;
+use Visifo\SmackClause\Types\IntSmack;
+use Visifo\SmackClause\Types\ObjectSmack;
+use Visifo\SmackClause\Types\StringSmack;
 
 describe('that', function (): void {
     it('throws on null', function (): void {

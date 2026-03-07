@@ -7,6 +7,11 @@ use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Exception\Trace;
 use Visifo\SmackClause\Extension\CustomSmack;
 use Visifo\SmackClause\Extension\SmackRegistry;
+use Visifo\SmackClause\Types\BoolSmack;
+use Visifo\SmackClause\Types\FloatSmack;
+use Visifo\SmackClause\Types\IntSmack;
+use Visifo\SmackClause\Types\ObjectSmack;
+use Visifo\SmackClause\Types\StringSmack;
 
 /**
  * @mixin IdeHelperSmack

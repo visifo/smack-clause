@@ -2,7 +2,7 @@
 
 use Visifo\SmackClause\Exception\SmackException;
 use Visifo\SmackClause\Smack;
-use Visifo\SmackClause\StringSmack;
+use Visifo\SmackClause\Types\StringSmack;
 
 describe('isNotEmpty', function (): void {
     it('throws for empty string', function (): void {

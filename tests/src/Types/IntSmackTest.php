@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
 use Visifo\SmackClause\Exception\SmackException;
-use Visifo\SmackClause\IntSmack;
 use Visifo\SmackClause\Smack;
+use Visifo\SmackClause\Types\IntSmack;
 
 describe('isPositive', function (): void {
     it('throws for zero int', function (): void {
