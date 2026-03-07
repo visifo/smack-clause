@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Visifo\SmackClause\Exception;
+namespace Visifo\SmackClause\Exceptions;
 
 use InvalidArgumentException;
 use SplFileObject;

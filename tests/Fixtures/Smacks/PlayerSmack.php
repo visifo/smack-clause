@@ -3,8 +3,8 @@
 namespace Visifo\SmackClause\Tests\Fixtures\Smacks;
 
 use Override;
-use Visifo\SmackClause\Exception\SmackException;
-use Visifo\SmackClause\Exception\Trace;
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
 use Visifo\SmackClause\Extension\CustomSmack;
 use Visifo\SmackClause\Extension\SmackMethod;
 

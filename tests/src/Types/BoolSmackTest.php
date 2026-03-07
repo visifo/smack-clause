@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Visifo\SmackClause\Exception\SmackException;
+use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Smack;
 
 describe('isTrue', function (): void {

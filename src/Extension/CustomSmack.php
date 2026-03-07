@@ -2,8 +2,8 @@
 
 namespace Visifo\SmackClause\Extension;
 
-use Visifo\SmackClause\Exception\SmackException;
-use Visifo\SmackClause\Exception\Trace;
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
 
 abstract readonly class CustomSmack
 {
