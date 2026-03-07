@@ -5,8 +5,8 @@ namespace Visifo\SmackClause\Tests\Fixtures\Smacks;
 use Override;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
-use Visifo\SmackClause\Extension\CustomSmack;
-use Visifo\SmackClause\Extension\SmackMethod;
+use Visifo\SmackClause\Extensions\CustomSmack;
+use Visifo\SmackClause\Extensions\SmackMethod;
 
 #[SmackMethod('isPlayer')]
 final readonly class PlayerSmack extends CustomSmack

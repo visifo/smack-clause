@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use Visifo\SmackClause\Extension\SmackRegistry;
+use Visifo\SmackClause\Extensions\SmackRegistry;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\DuplicatePlayerSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\InvalidMethodNameSmack;
 use Visifo\SmackClause\Tests\Fixtures\InvalidSmacks\MissingAttributeSmack;

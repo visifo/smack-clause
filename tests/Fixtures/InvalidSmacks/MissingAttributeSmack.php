@@ -5,7 +5,7 @@ namespace Visifo\SmackClause\Tests\Fixtures\InvalidSmacks;
 use Override;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
-use Visifo\SmackClause\Extension\CustomSmack;
+use Visifo\SmackClause\Extensions\CustomSmack;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\GamePlayer;
 
 final readonly class MissingAttributeSmack extends CustomSmack

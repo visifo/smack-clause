@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Visifo\SmackClause\Extension;
+namespace Visifo\SmackClause\Extensions;
 
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;

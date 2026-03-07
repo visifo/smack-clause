@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Composer\Autoload\ClassLoader;
-use Visifo\SmackClause\Extension\SmackRegistry;
+use Visifo\SmackClause\Extensions\SmackRegistry;
 use Visifo\SmackClause\IdeHelperCommand;
 
 describe('ide helper command', function (): void {
