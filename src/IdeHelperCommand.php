@@ -198,7 +198,7 @@ final class IdeHelperCommand
 
                 $resolvedPrefixPath = realpath($prefixPath);
                 $basePath = is_string($resolvedPrefixPath) ? rtrim($resolvedPrefixPath, '/') : rtrim($prefixPath, '/');
-                if (! is_dir($basePath) || ! self::isPathWithinScanPaths($basePath, $scanPaths)) {
+                if (! is_dir($basePath)) {
                     continue;
                 }
 
@@ -212,6 +212,10 @@ final class IdeHelperCommand
                     }
 
                     $path = $fileInfo->getPathname();
+                    if (! self::isPathWithinScanPaths($path, $scanPaths)) {
+                        continue;
+                    }
+
                     $relativePath = substr($path, strlen($basePath) + 1);
                     if (! is_string($relativePath) || ! str_ends_with($relativePath, '.php')) {
                         continue;

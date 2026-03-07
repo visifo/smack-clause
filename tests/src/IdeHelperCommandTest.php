@@ -2,6 +2,7 @@
 
 use Composer\Autoload\ClassLoader;
 use Visifo\SmackClause\IdeHelperCommand;
+use Visifo\SmackClause\SmackRegistry;
 
 describe('ide helper command', function (): void {
     it('generates helper file for valid custom smacks', function (): void {
@@ -70,6 +71,7 @@ describe('ide helper command', function (): void {
 
         $loader = array_first(ClassLoader::getRegisteredLoaders());
         expect($loader)->toBeInstanceOf(ClassLoader::class);
+        class_exists(SmackRegistry::class);
 
         if (! $loader instanceof ClassLoader) {
             smackDeleteDirectory($root);
