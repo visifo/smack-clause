@@ -226,10 +226,6 @@ final class IdeHelperCommand
                     }
 
                     $classSuffix = substr($relativePath, 0, -4);
-                    if (! is_string($classSuffix)) {
-                        continue;
-                    }
-
                     $class = $prefix.str_replace(['/', '\\'], '\\', $classSuffix);
                     if (isset($classFiles[$class])) {
                         throw new RuntimeException(sprintf(
@@ -240,7 +236,6 @@ final class IdeHelperCommand
                         ));
                     }
 
-                    /** @var class-string $class */
                     $classFiles[$class] = $path;
                 }
             }

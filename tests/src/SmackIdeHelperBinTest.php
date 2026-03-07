@@ -23,6 +23,8 @@ describe('smack-ide-helper bin', function (): void {
                 escapeshellarg($scanPath),
             );
 
+            $output = [];
+            $exitCode = 0;
             exec($command, $output, $exitCode);
 
             expect($exitCode)->toBe(0);
