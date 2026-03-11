@@ -118,7 +118,7 @@ Available parameters:
 - `--scan=<path>`
   - Default: all `autoload.psr-4` directories from `<root>/composer.json`.
   - Purpose: limit scanning to specific directory.
-  - Notes: can be passed multiple times; when provided, only these directories are scanned.
+  - Notes: can be passed only once; when provided, it must point to a directory inside one of the root package's `autoload.psr-4` directories.
 
 This command generates `_smack_ide_helper.php` in your project root with a `Visifo\\SmackClause\\IdeHelperSmack` class that contains `@method` annotations for dynamic smack methods. `Smack` is linked to it via `@mixin`.
 

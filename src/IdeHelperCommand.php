@@ -2,7 +2,6 @@
 
 namespace Visifo\SmackClause;
 
-use Composer\Autoload\ClassLoader;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -31,9 +30,9 @@ final class IdeHelperCommand
 
             require_once $autoloadPath;
 
-            $loader = self::resolveClassLoader($root);
-            $scanPaths = self::resolveScanPaths($root, $config['scan'], $loader);
-            $classFiles = self::discoverClassFiles($scanPaths, $loader);
+            $autoloadPaths = self::resolveAutoloadPaths($root);
+            $scanPath = self::resolveScanPath($root, $config['scan']);
+            $classFiles = self::discoverClassFiles($autoloadPaths, $scanPath);
 
             $registry = new SmackRegistry;
             foreach ($classFiles as $class => $file) {
@@ -61,7 +60,9 @@ final class IdeHelperCommand
             $content = self::buildHelperContent($methods);
 
             $outputFile = $root.'/_smack_ide_helper.php';
-            file_put_contents($outputFile, $content);
+            if (file_put_contents($outputFile, $content) === false) {
+                throw new RuntimeException(sprintf('Could not write helper file to `%s`.', $outputFile));
+            }
 
             fwrite(STDOUT, sprintf(
                 "Generated %d method annotation(s) in %s\n",
@@ -79,12 +80,12 @@ final class IdeHelperCommand
 
     /**
      * @param array<int, string> $argv
-     * @return array{root:string,scan:list<string>}
+     * @return array{root:string,scan:string|null}
      */
     private static function parseArguments(array $argv): array
     {
         $root = getcwd();
-        $scanPaths = [];
+        $scanPath = null;
 
         foreach ($argv as $argument) {
             if (str_starts_with($argument, '--root=')) {
@@ -93,9 +94,13 @@ final class IdeHelperCommand
             }
 
             if (str_starts_with($argument, '--scan=')) {
+                if ($scanPath !== null) {
+                    throw new RuntimeException('Only one `--scan` option is allowed.');
+                }
+
                 $scanPath = trim(substr($argument, 7));
-                if ($scanPath !== '') {
-                    $scanPaths[] = $scanPath;
+                if ($scanPath === '') {
+                    throw new RuntimeException('The `--scan` option must not be empty.');
                 }
             }
         }
@@ -106,7 +111,7 @@ final class IdeHelperCommand
 
         return [
             'root' => $root,
-            'scan' => array_values(array_unique($scanPaths)),
+            'scan' => $scanPath,
         ];
     }
 
@@ -125,87 +130,103 @@ final class IdeHelperCommand
     }
 
     /**
-     * @param list<string> $scanOverrides
-     * @return list<string>
+     * @return array<string, list<string>>
      */
-    private static function resolveScanPaths(string $root, array $scanOverrides, ClassLoader $loader): array
+    private static function resolveAutoloadPaths(string $root): array
     {
-        if ($scanOverrides !== []) {
-            $paths = [];
-            foreach ($scanOverrides as $scanOverride) {
-                $path = self::normalizePath($root, $scanOverride);
-                if (is_dir($path)) {
-                    $paths[] = $path;
-                }
-            }
-
-            if ($paths === []) {
-                throw new RuntimeException('No valid scan directories were found for --scan options.');
-            }
-
-            return array_values(array_unique($paths));
+        $composerPath = $root.'/composer.json';
+        $composerContent = file_get_contents($composerPath);
+        if (! is_string($composerContent)) {
+            throw new RuntimeException(sprintf('Could not read composer.json at `%s`.', $composerPath));
         }
 
-        $autoload = $loader->getPrefixesPsr4();
+        /** @var array{autoload?: array{psr-4?: array<string, string|list<string>>}}|null $composer */
+        $composer = json_decode($composerContent, true);
+        if (! is_array($composer)) {
+            throw new RuntimeException(sprintf('Could not decode composer.json at `%s`.', $composerPath));
+        }
+
+        $autoload = $composer['autoload']['psr-4'] ?? null;
+        if (! is_array($autoload) || $autoload === []) {
+            throw new RuntimeException('No autoload.psr-4 directories found in composer.json.');
+        }
 
         $paths = [];
-        foreach ($autoload as $autoloadPaths) {
-            foreach ($autoloadPaths as $autoloadDir) {
+        foreach ($autoload as $prefix => $autoloadPaths) {
+            $directories = is_array($autoloadPaths) ? $autoloadPaths : [$autoloadPaths];
+            $resolvedDirectories = [];
+
+            foreach ($directories as $autoloadDir) {
                 if ($autoloadDir === '') {
                     continue;
                 }
 
-                $path = str_starts_with($autoloadDir, '/')
-                    ? rtrim($autoloadDir, '/')
-                    : self::normalizePath($root, $autoloadDir);
-
-                if (! is_dir($path)) {
+                $resolvedPath = self::normalizePath($root, $autoloadDir);
+                if (! is_dir($resolvedPath)) {
                     continue;
                 }
 
-                $resolvedPath = realpath($path);
-                $paths[] = is_string($resolvedPath) ? $resolvedPath : $path;
+                $resolvedDirectories[] = $resolvedPath;
             }
+
+            if ($resolvedDirectories === []) {
+                continue;
+            }
+
+            $paths[$prefix] = array_values(array_unique($resolvedDirectories));
         }
 
         if ($paths === []) {
-            throw new RuntimeException('No autoload.psr-4 directories found to scan.');
+            throw new RuntimeException('No autoload.psr-4 directories from composer.json could be resolved.');
         }
 
-        return array_values(array_unique($paths));
+        return $paths;
     }
 
     private static function normalizePath(string $root, string $path): string
     {
-        if (str_starts_with($path, '/')) {
-            return rtrim($path, '/');
+        $normalizedPath = str_starts_with($path, '/')
+            ? rtrim($path, '/')
+            : rtrim($root.'/'.trim($path, '/'), '/');
+
+        $resolvedPath = realpath($normalizedPath);
+
+        return is_string($resolvedPath) ? $resolvedPath : $normalizedPath;
+    }
+
+    private static function resolveScanPath(string $root, ?string $scanOverride): ?string
+    {
+        if ($scanOverride === null) {
+            return null;
         }
 
-        return rtrim($root.'/'.trim($path, '/'), '/');
+        $path = self::normalizePath($root, $scanOverride);
+        if (! is_dir($path)) {
+            throw new RuntimeException(sprintf('Scan directory `%s` does not exist.', $path));
+        }
+
+        return $path;
     }
 
     /**
-     * @param list<string> $scanPaths
+     * @param array<string, list<string>> $autoloadPaths
      * @return array<class-string, string>
      */
-    private static function discoverClassFiles(array $scanPaths, ClassLoader $loader): array
+    private static function discoverClassFiles(array $autoloadPaths, ?string $scanPath): array
     {
         $classFiles = [];
-        $prefixes = $loader->getPrefixesPsr4();
-        foreach ($prefixes as $prefix => $prefixPaths) {
-            foreach ($prefixPaths as $prefixPath) {
-                if ($prefixPath === '') {
+        $matchedScanPath = $scanPath === null;
+
+        foreach ($autoloadPaths as $prefix => $prefixPaths) {
+            foreach ($prefixPaths as $basePath) {
+                if ($scanPath !== null && ! self::isPathWithinDirectory($scanPath, $basePath)) {
                     continue;
                 }
 
-                $resolvedPrefixPath = realpath($prefixPath);
-                $basePath = is_string($resolvedPrefixPath) ? rtrim($resolvedPrefixPath, '/') : rtrim($prefixPath, '/');
-                if (! is_dir($basePath)) {
-                    continue;
-                }
-
+                $matchedScanPath = true;
+                $directory = $scanPath ?? $basePath;
                 $iterator = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($basePath, FilesystemIterator::SKIP_DOTS),
+                    new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
                 );
 
                 foreach ($iterator as $fileInfo) {
@@ -218,10 +239,6 @@ final class IdeHelperCommand
                     }
 
                     $path = $fileInfo->getPathname();
-                    if (! self::isPathWithinScanPaths($path, $scanPaths)) {
-                        continue;
-                    }
-
                     $relativePath = substr($path, strlen($basePath) + 1);
                     if (! str_ends_with($relativePath, '.php')) {
                         continue;
@@ -243,37 +260,19 @@ final class IdeHelperCommand
             }
         }
 
+        if (! $matchedScanPath && $scanPath !== null) {
+            throw new RuntimeException(sprintf(
+                'Scan directory `%s` is not inside any root autoload.psr-4 directory.',
+                $scanPath,
+            ));
+        }
+
         return $classFiles;
     }
 
-    /**
-     * @param list<string> $scanPaths
-     */
-    private static function isPathWithinScanPaths(string $path, array $scanPaths): bool
+    private static function isPathWithinDirectory(string $path, string $directory): bool
     {
-        return array_any(
-            $scanPaths,
-            static fn ($scanPath): bool => str_starts_with($path, $scanPath.'/') || $path === $scanPath,
-        );
-    }
-
-    private static function resolveClassLoader(string $root): ClassLoader
-    {
-        $loaders = ClassLoader::getRegisteredLoaders();
-        if ($loaders === []) {
-            throw new RuntimeException('Could not resolve Composer class loader.');
-        }
-
-        $rootPrefix = $root.'/vendor/';
-        foreach ($loaders as $vendorDir => $loader) {
-            if (! str_starts_with($vendorDir, $rootPrefix)) {
-                continue;
-            }
-
-            return $loader;
-        }
-
-        return array_first($loaders);
+        return $path === $directory || str_starts_with($path, $directory.'/');
     }
 
     /**
