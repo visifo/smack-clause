@@ -4,13 +4,22 @@ use Composer\Autoload\ClassLoader;
 use Visifo\SmackClause\Extensions\SmackRegistry;
 use Visifo\SmackClause\IdeHelperCommand;
 
+function ideHelperFixturePath(string $fixture): string
+{
+    $path = realpath(__DIR__.'/../Fixtures/'.$fixture);
+    if ($path === false) {
+        throw new RuntimeException(sprintf('Unable to resolve `%s` fixture path.', $fixture));
+    }
+
+    return $path;
+}
+
 describe('ide helper command', function (): void {
     it('generates helper file for valid custom smacks', function (): void {
-        $root = smackCreateTempProjectRoot();
-        $validScanPath = realpath(__DIR__.'/../Fixtures/Smacks');
-        if ($validScanPath === false) {
-            throw new RuntimeException('Unable to resolve valid fixture path.');
-        }
+        $validScanPath = ideHelperFixturePath('Smacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
+        ]);
 
         try {
             $exitCode = IdeHelperCommand::run([
@@ -36,7 +45,10 @@ describe('ide helper command', function (): void {
     });
 
     it('fails when scan override paths are invalid', function (): void {
-        $root = smackCreateTempProjectRoot();
+        $validScanPath = ideHelperFixturePath('Smacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
+        ]);
 
         try {
             $exitCode = IdeHelperCommand::run([
@@ -51,12 +63,51 @@ describe('ide helper command', function (): void {
         }
     });
 
-    it('fails strictly for invalid custom smacks', function (): void {
-        $root = smackCreateTempProjectRoot();
-        $invalidScanPath = realpath(__DIR__.'/../Fixtures/InvalidSmacks');
-        if ($invalidScanPath === false) {
-            throw new RuntimeException('Unable to resolve invalid fixture path.');
+    it('fails when multiple scan override paths are provided', function (): void {
+        $validScanPath = ideHelperFixturePath('Smacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
+        ]);
+
+        try {
+            $exitCode = IdeHelperCommand::run([
+                '--root='.$root,
+                '--scan='.$validScanPath,
+                '--scan='.$validScanPath,
+            ]);
+
+            expect($exitCode)->toBe(1);
+            expect(is_file($root.'/_smack_ide_helper.php'))->toBeFalse();
+        } finally {
+            smackDeleteDirectory($root);
         }
+    });
+
+    it('fails when scan path is outside the root autoload psr-4 directories', function (): void {
+        $validScanPath = ideHelperFixturePath('Smacks');
+        $invalidScanPath = ideHelperFixturePath('InvalidSmacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
+        ]);
+
+        try {
+            $exitCode = IdeHelperCommand::run([
+                '--root='.$root,
+                '--scan='.$invalidScanPath,
+            ]);
+
+            expect($exitCode)->toBe(1);
+            expect(is_file($root.'/_smack_ide_helper.php'))->toBeFalse();
+        } finally {
+            smackDeleteDirectory($root);
+        }
+    });
+
+    it('fails strictly for invalid custom smacks', function (): void {
+        $invalidScanPath = ideHelperFixturePath('InvalidSmacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\InvalidSmacks\\' => $invalidScanPath,
+        ]);
 
         try {
             $exitCode = IdeHelperCommand::run([
@@ -72,11 +123,10 @@ describe('ide helper command', function (): void {
     });
 
     it('works when class map is authoritative (optimized mode simulation)', function (): void {
-        $root = smackCreateTempProjectRoot();
-        $validScanPath = realpath(__DIR__.'/../Fixtures/Smacks');
-        if ($validScanPath === false) {
-            throw new RuntimeException('Unable to resolve valid fixture path.');
-        }
+        $validScanPath = ideHelperFixturePath('Smacks');
+        $root = smackCreateTempProjectRoot([
+            'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
+        ]);
 
         $loader = array_first(ClassLoader::getRegisteredLoaders());
         expect($loader)->toBeInstanceOf(ClassLoader::class);
