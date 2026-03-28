@@ -88,11 +88,11 @@ final readonly class VatSmack implements Smackable
         mixed $value,
         Trace $trace,
     ): self {
-        if (! $value instanceof VatId) {
-            throw SmackException::forExpectedType(VatId::class, $value, $trace);
+        if ($value instanceof VatId) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType(VatId::class, $value, $trace);
     }
 
     public function isEu(): self
@@ -128,11 +128,11 @@ final readonly class PlayerSmack extends ObjectSmack
 
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! $value instanceof GamePlayer) {
-            throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+        if ($value instanceof GamePlayer) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
     }
 
     public function isNotUn(): self

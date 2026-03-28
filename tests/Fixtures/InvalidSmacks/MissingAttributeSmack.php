@@ -15,10 +15,10 @@ final readonly class MissingAttributeSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! $value instanceof GamePlayer) {
-            throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+        if ($value instanceof GamePlayer) {
+            return new self;
         }
 
-        return new self;
+        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
     }
 }

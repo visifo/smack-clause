@@ -21,11 +21,11 @@ final readonly class PlayerSmack extends ObjectSmack
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! $value instanceof GamePlayer) {
-            throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+        if ($value instanceof GamePlayer) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
     }
 
     public function isNotUn(): self
