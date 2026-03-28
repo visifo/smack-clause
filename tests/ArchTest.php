@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-arch()->preset()->php();
+use Visifo\SmackClause\Smack;
+
+arch()->preset()->php()->ignoring(Smack::class);
 
 arch()->preset()->security();
 

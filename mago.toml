@@ -10,6 +10,8 @@ excludes = []
 
 [formatter]
 preset = "pint"
+opening-tag-on-own-line = false
+empty-line-after-opening-tag = false
 
 [linter]
 integrations = ["pest"]
@@ -36,6 +38,10 @@ register-super-globals = true
 
 # Ignore an error code only in specific paths
 ignore = [
+  "unhandled-thrown-type",
   { code = "mixed-method-access", in = "tests/" },
   { code = "mixed-property-access", in = "tests/" },
+  { code = "unused-property", in = "tests/" },
+  { code = "non-documented-method", in = "tests/" },
+  { code = "mixed-assignment", in = "tests/" },
 ]

@@ -44,13 +44,140 @@ Smack::that($userIDs)->each()->isInt()->isPositive();
 ```
 
 ## Custom Smacks
-Extend the library with your own logic:
+Extend the library with your own logic while keeping `Smack::that(...)->...` syntax.
 
 ```php
-Smack::register('isVat', fn($val) => str_starts_with($val, 'DE'));
+use App\Smack\PlayerSmack;
+use Visifo\SmackClause\Smack;
 
-Smack::that($vat)->isVat();
+Smack::register(PlayerSmack::class);
+
+Smack::that($player)
+    ->isPlayer()
+    ->isNotUn()
+    ->isInPlayState();
 ```
+
+You can register as many project-specific root methods as you need, one class at a time:
+
+```php
+Smack::register(PlayerSmack::class);
+Smack::register(VatSmack::class);
+```
+
+Use `#[SmackMethod('...')]` on the class and implement `screenInto(...)`.
+Dynamic smack root methods do not accept arguments.
+
+### Option 1: Implement `Smackable` directly
+
+```php
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
+use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Smackable;
+
+#[SmackMethod('isVat')]
+final readonly class VatSmack implements Smackable
+{
+    private function __construct(
+        private VatId $vat,
+        private Trace $trace,
+    ) {}
+
+    public static function screenInto(
+        mixed $value,
+        Trace $trace,
+    ): self {
+        if ($value instanceof VatId) {
+            return new self($value, $trace);
+        }
+
+        throw SmackException::forExpectedType(VatId::class, $value, $trace);
+    }
+
+    public function isEu(): self
+    {
+        if ($this->vat->isEu()) {
+            return $this;
+        }
+
+        throw SmackException::forConstraint('EU VAT ID', $this->vat, $this->trace);
+    }
+}
+```
+
+### Option 2: Extend a typed smack (for method reuse)
+
+If you extend `ObjectSmack`, always override `screenInto(...)` and call `parent::__construct(...)` to keep inherited object methods safe.
+
+```php
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
+use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Types\ObjectSmack;
+
+#[SmackMethod('isPlayer')]
+final readonly class PlayerSmack extends ObjectSmack
+{
+    public function __construct(
+        private GamePlayer $player,
+        private Trace $trace,
+    ) {
+        parent::__construct($player, $trace);
+    }
+
+    public static function screenInto(mixed $value, Trace $trace): self
+    {
+        if ($value instanceof GamePlayer) {
+            return new self($value, $trace);
+        }
+
+        throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
+    }
+
+    public function isNotUn(): self
+    {
+        if (! $this->player->isUn()) {
+            return $this;
+        }
+
+        throw SmackException::forConstraint('not UN', $this->player, $this->trace);
+    }
+}
+```
+
+See [tests/Fixtures/Smacks/PlayerSmack.php](tests/Fixtures/Smacks/PlayerSmack.php) for a complete example.
+
+## IDE Helper
+For dynamic custom methods (`isPlayer()`, `isVat()`, ...), generate a typed helper class for IDE/static tooling:
+
+```bash
+vendor/bin/smack-ide-helper
+```
+
+Available parameters:
+
+- `--root=<path>`
+  - Default: current working directory (`getcwd()`).
+  - Purpose: project root used for `composer.json`, autoload, and output file location.
+- `--scan=<path>`
+  - Default: all `autoload.psr-4` directories from `<root>/composer.json`.
+  - Purpose: limit scanning to specific directory.
+  - Notes: can be passed only once; when provided, it must point to a directory inside one of the root package's `autoload.psr-4` directories.
+
+This command generates `_smack_ide_helper.php` in your project root with a `Visifo\\SmackClause\\IdeHelperSmack` class that contains `@method` annotations for dynamic smack methods. `Smack` is linked to it via `@mixin`.
+
+After generating, static tooling can understand calls like:
+
+```php
+use Visifo\SmackClause\Smack;
+
+Smack::that($player)
+    ->isPlayer()
+    ->isNotUn();
+```
+
+The generator is strict and fails if any registered smack class is invalid (missing `#[SmackMethod('...')]`, duplicate method name, missing `screenInto(...)`, inherited `screenInto(...)` without override, invalid class, etc.).
 
 ## The Violation Report
 When a check fails, `SmackViolation` *(extends `InvalidArgumentException`)* gives you the forensics:

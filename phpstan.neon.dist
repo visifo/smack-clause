@@ -1,0 +1,30 @@
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+        - _smack_ide_helper.php
+    phpVersion: 80500
+    ignoreErrors:
+        -
+            identifier: method.internalClass
+            path: tests/*
+        -
+            identifier: method.nonObject
+            path: tests/*
+        -
+            identifier: property.nonObject
+            path: tests/*
+        -
+            identifier: method.notFound
+            path: tests/*
+        -
+            identifier: property.notFound
+            path: tests/*
+        -
+            identifier: argument.templateType
+            path: tests/src/Extensions/CustomSmackTest.php

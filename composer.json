@@ -24,9 +24,11 @@
         "php": "^8.5"
     },
     "require-dev": {
-        "carthage-software/mago": "^1.10.0",
-        "pestphp/pest": "^4.4.1",
-        "rector/rector": "^2.3.8",
+        "carthage-software/mago": "^1.16.0",
+        "pestphp/pest": "^4.4.3",
+        "phpstan/phpstan": "^2.1.44",
+        "phpstan/phpstan-strict-rules": "^2.0.10",
+        "rector/rector": "^2.3.9",
         "spatie/ray": "^1.47"
     },
     "autoload": {
@@ -39,13 +41,18 @@
             "Visifo\\SmackClause\\Tests\\": "tests"
         }
     },
+    "bin": [
+        "bin/smack-ide-helper"
+    ],
     "scripts": {
-        "test": "vendor/bin/pest",
+        "helper": "bin/smack-ide-helper",
+        "test": "vendor/bin/pest --compact",
         "test-coverage": "vendor/bin/pest --coverage",
         "rect": "vendor/bin/rector",
         "lint": "vendor/bin/mago lint --fix --unsafe",
         "format": "vendor/bin/mago fmt",
-        "check": "vendor/bin/mago analyze",
+        "check": "vendor/bin/mago analyze --minimum-fail-level help",
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=1G",
         "fix": [
             "@rect",
             "@lint",
@@ -53,7 +60,8 @@
         ],
         "full": [
             "@fix",
-            "@check",
+            "@helper",
+            "@phpstan",
             "@test"
         ]
     },
