@@ -12,17 +12,22 @@ use Visifo\SmackClause\Types\ObjectSmack;
 final readonly class PlayerSmack extends ObjectSmack
 {
     public function __construct(
-        private GamePlayer $player,
+        private ?GamePlayer $player,
         private Trace $trace,
+        private bool $optional = false,
     ) {
-        parent::__construct($player, $trace);
+        parent::__construct($player, $trace, $optional);
     }
 
     #[Override]
-    public static function screenInto(mixed $value, Trace $trace): self
+    public static function screenInto(mixed $value, Trace $trace, bool $optional = false): self
     {
+        if ($value === null) {
+            return new self(null, $trace, $optional);
+        }
+
         if ($value instanceof GamePlayer) {
-            return new self($value, $trace);
+            return new self($value, $trace, $optional);
         }
 
         throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
@@ -30,6 +35,14 @@ final readonly class PlayerSmack extends ObjectSmack
 
     public function isNotUn(): self
     {
+        if (! $this->player instanceof GamePlayer) {
+            if ($this->optional) {
+                return $this;
+            }
+
+            throw SmackException::forNullValue($this->trace);
+        }
+
         if (! $this->player->isUn()) {
             return $this;
         }
@@ -39,6 +52,14 @@ final readonly class PlayerSmack extends ObjectSmack
 
     public function isInPlayState(): self
     {
+        if (! $this->player instanceof GamePlayer) {
+            if ($this->optional) {
+                return $this;
+            }
+
+            throw SmackException::forNullValue($this->trace);
+        }
+
         if ($this->player->game->isInPlayState()) {
             return $this;
         }

@@ -10,15 +10,20 @@ use Visifo\SmackClause\Smackable;
 readonly class IntSmack implements Smackable
 {
     public function __construct(
-        private int $value,
+        private ?int $value,
         private Trace $trace,
+        private bool $optional = false,
     ) {}
 
     #[Override]
-    public static function screenInto(mixed $value, Trace $trace): self
+    public static function screenInto(mixed $value, Trace $trace, bool $optional = false): self
     {
+        if ($value === null) {
+            return new self(null, $trace, $optional);
+        }
+
         if (is_int($value)) {
-            return new self($value, $trace);
+            return new self($value, $trace, $optional);
         }
 
         throw SmackException::forExpectedType('int', $value, $trace);
@@ -26,6 +31,14 @@ readonly class IntSmack implements Smackable
 
     public function isPositive(): self
     {
+        if ($this->value === null) {
+            if ($this->optional) {
+                return $this;
+            }
+
+            throw SmackException::forNullValue($this->trace);
+        }
+
         if ($this->value > 0) {
             return $this;
         }
@@ -35,6 +48,14 @@ readonly class IntSmack implements Smackable
 
     public function isNegative(): self
     {
+        if ($this->value === null) {
+            if ($this->optional) {
+                return $this;
+            }
+
+            throw SmackException::forNullValue($this->trace);
+        }
+
         if ($this->value < 0) {
             return $this;
         }

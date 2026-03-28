@@ -6,5 +6,5 @@ use Visifo\SmackClause\Exceptions\Trace;
 
 interface Smackable
 {
-    public static function screenInto(mixed $value, Trace $trace): self;
+    public static function screenInto(mixed $value, Trace $trace, bool $optional = false): self;
 }

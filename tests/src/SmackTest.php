@@ -23,114 +23,218 @@ describe('that', function (): void {
 
         expect($result)->toBeInstanceOf(Smack::class);
     });
-});
 
-describe('isBool', function (): void {
-    it('throws for non bool value', function (): void {
-        Smack::that('true')->isBool();
-    })->throws(SmackException::class, 'Validation failed for `\'true\'`: expected `bool`, got `"true"`.');
+    describe('isBool', function (): void {
+        it('throws for non bool value', function (): void {
+            Smack::that('true')->isBool();
+        })->throws(SmackException::class, 'Validation failed for `\'true\'`: expected `bool`, got `"true"`.');
 
-    it('throws for non bool variable', function (): void {
-        $value = 'true';
-        Smack::that($value)->isBool();
-    })->throws(SmackException::class, 'Validation failed for `$value`: expected `bool`, got `"true"`.');
+        it('throws for non bool variable', function (): void {
+            $value = 'true';
+            Smack::that($value)->isBool();
+        })->throws(SmackException::class, 'Validation failed for `$value`: expected `bool`, got `"true"`.');
 
-    it('throws for non bool expression', function (): void {
-        $value = 'true';
-        Smack::that($value.'ly')->isBool();
-    })->throws(SmackException::class, 'Validation failed for `$value.\'ly\'`: expected `bool`, got `"truely"`.');
+        it('throws for non bool expression', function (): void {
+            $value = 'true';
+            Smack::that($value.'ly')->isBool();
+        })->throws(SmackException::class, 'Validation failed for `$value.\'ly\'`: expected `bool`, got `"truely"`.');
 
-    it('returns bool smack for bool value', function (): void {
-        $result = Smack::that(true)->isBool();
+        it('returns bool smack for bool value', function (): void {
+            $result = Smack::that(true)->isBool();
 
-        expect($result)->toBeInstanceOf(BoolSmack::class);
+            expect($result)->toBeInstanceOf(BoolSmack::class);
+        });
+    });
+
+    describe('isString', function (): void {
+        it('throws for non string value', function (): void {
+            Smack::that(123)->isString();
+        })->throws(SmackException::class, 'Validation failed for `123`: expected `string`, got `123`.');
+
+        it('throws for non string variable', function (): void {
+            $value = 123;
+            Smack::that($value)->isString();
+        })->throws(SmackException::class, 'Validation failed for `$value`: expected `string`, got `123`.');
+
+        it('throws for non string expression', function (): void {
+            $value = 123;
+            Smack::that($value + 1)->isString();
+        })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `string`, got `124`.');
+
+        it('returns string smack for string value', function (): void {
+            $result = Smack::that('value')->isString();
+
+            expect($result)->toBeInstanceOf(StringSmack::class);
+        });
+    });
+
+    describe('isInt', function (): void {
+        it('throws for non int value', function (): void {
+            Smack::that(1.23)->isInt();
+        })->throws(SmackException::class, 'Validation failed for `1.23`: expected `int`, got `1.23`.');
+
+        it('throws for non int variable', function (): void {
+            $value = 1.23;
+            Smack::that($value)->isInt();
+        })->throws(SmackException::class, 'Validation failed for `$value`: expected `int`, got `1.23`.');
+
+        it('throws for non int expression', function (): void {
+            $value = 1.23;
+            Smack::that($value + 1)->isInt();
+        })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `int`, got `2.23`.');
+
+        it('returns int smack for int value', function (): void {
+            $result = Smack::that(123)->isInt();
+
+            expect($result)->toBeInstanceOf(IntSmack::class);
+        });
+    });
+
+    describe('isFloat', function (): void {
+        it('throws for non float value', function (): void {
+            Smack::that(1)->isFloat();
+        })->throws(SmackException::class, 'Validation failed for `1`: expected `float`, got `1`.');
+
+        it('throws for non float variable', function (): void {
+            $value = 1;
+            Smack::that($value)->isFloat();
+        })->throws(SmackException::class, 'Validation failed for `$value`: expected `float`, got `1`.');
+
+        it('throws for non float expression', function (): void {
+            $value = 1;
+            Smack::that($value + 1)->isFloat();
+        })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `float`, got `2`.');
+
+        it('returns float smack for float value', function (): void {
+            $result = Smack::that(1.23)->isFloat();
+
+            expect($result)->toBeInstanceOf(FloatSmack::class);
+        });
+    });
+
+    describe('isObject', function (): void {
+        it('throws for non object value', function (): void {
+            Smack::that('value')->isObject();
+        })->throws(SmackException::class, 'Validation failed for `\'value\'`: expected `object`, got `"value"`.');
+
+        it('throws for non object variable', function (): void {
+            $value = 'value';
+            Smack::that($value)->isObject();
+        })->throws(SmackException::class, 'Validation failed for `$value`: expected `object`, got `"value"`.');
+
+        it('throws for non object expression', function (): void {
+            $value = 'value';
+            Smack::that($value.'ly')->isObject();
+        })->throws(SmackException::class, 'Validation failed for `$value.\'ly\'`: expected `object`, got `"valuely"`.');
+
+        it('returns object smack for object value', function (): void {
+            $result = Smack::that(new stdClass)->isObject();
+
+            expect($result)->toBeInstanceOf(ObjectSmack::class);
+        });
     });
 });
 
-describe('isString', function (): void {
-    it('throws for non string value', function (): void {
-        Smack::that(123)->isString();
-    })->throws(SmackException::class, 'Validation failed for `123`: expected `string`, got `123`.');
+describe('maybe', function (): void {
+    it('returns smack instance for null', function (): void {
+        $result = Smack::maybe(null);
 
-    it('throws for non string variable', function (): void {
-        $value = 123;
-        Smack::that($value)->isString();
-    })->throws(SmackException::class, 'Validation failed for `$value`: expected `string`, got `123`.');
-
-    it('throws for non string expression', function (): void {
-        $value = 123;
-        Smack::that($value + 1)->isString();
-    })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `string`, got `124`.');
-
-    it('returns string smack for string value', function (): void {
-        $result = Smack::that('value')->isString();
-
-        expect($result)->toBeInstanceOf(StringSmack::class);
+        expect($result)->toBeInstanceOf(Smack::class);
     });
-});
 
-describe('isInt', function (): void {
-    it('throws for non int value', function (): void {
-        Smack::that(1.23)->isInt();
-    })->throws(SmackException::class, 'Validation failed for `1.23`: expected `int`, got `1.23`.');
+    it('returns smack instance for non-null value', function (): void {
+        $result = Smack::maybe('value');
 
-    it('throws for non int variable', function (): void {
-        $value = 1.23;
-        Smack::that($value)->isInt();
-    })->throws(SmackException::class, 'Validation failed for `$value`: expected `int`, got `1.23`.');
-
-    it('throws for non int expression', function (): void {
-        $value = 1.23;
-        Smack::that($value + 1)->isInt();
-    })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `int`, got `2.23`.');
-
-    it('returns int smack for int value', function (): void {
-        $result = Smack::that(123)->isInt();
-
-        expect($result)->toBeInstanceOf(IntSmack::class);
+        expect($result)->toBeInstanceOf(Smack::class);
     });
-});
 
-describe('isFloat', function (): void {
-    it('throws for non float value', function (): void {
-        Smack::that(1)->isFloat();
-    })->throws(SmackException::class, 'Validation failed for `1`: expected `float`, got `1`.');
+    describe('isBool', function (): void {
+        it('returns bool smack for null', function (): void {
+            $result = Smack::maybe(null)->isBool();
 
-    it('throws for non float variable', function (): void {
-        $value = 1;
-        Smack::that($value)->isFloat();
-    })->throws(SmackException::class, 'Validation failed for `$value`: expected `float`, got `1`.');
+            expect($result)->toBeInstanceOf(BoolSmack::class);
+        });
 
-    it('throws for non float expression', function (): void {
-        $value = 1;
-        Smack::that($value + 1)->isFloat();
-    })->throws(SmackException::class, 'Validation failed for `$value + 1`: expected `float`, got `2`.');
+        it('throws for non bool value', function (): void {
+            Smack::maybe('true')->isBool();
+        })->throws(SmackException::class, 'Validation failed for `\'true\'`: expected `bool`, got `"true"`.');
 
-    it('returns float smack for float value', function (): void {
-        $result = Smack::that(1.23)->isFloat();
+        it('returns bool smack for bool value', function (): void {
+            $result = Smack::maybe(true)->isBool();
 
-        expect($result)->toBeInstanceOf(FloatSmack::class);
+            expect($result)->toBeInstanceOf(BoolSmack::class);
+        });
     });
-});
 
-describe('isObject', function (): void {
-    it('throws for non object value', function (): void {
-        Smack::that('value')->isObject();
-    })->throws(SmackException::class, 'Validation failed for `\'value\'`: expected `object`, got `"value"`.');
+    describe('isString', function (): void {
+        it('returns string smack for null', function (): void {
+            $result = Smack::maybe(null)->isString();
 
-    it('throws for non object variable', function (): void {
-        $value = 'value';
-        Smack::that($value)->isObject();
-    })->throws(SmackException::class, 'Validation failed for `$value`: expected `object`, got `"value"`.');
+            expect($result)->toBeInstanceOf(StringSmack::class);
+        });
 
-    it('throws for non object expression', function (): void {
-        $value = 'value';
-        Smack::that($value.'ly')->isObject();
-    })->throws(SmackException::class, 'Validation failed for `$value.\'ly\'`: expected `object`, got `"valuely"`.');
+        it('throws for non string value', function (): void {
+            Smack::maybe(123)->isString();
+        })->throws(SmackException::class, 'Validation failed for `123`: expected `string`, got `123`.');
 
-    it('returns object smack for object value', function (): void {
-        $result = Smack::that(new stdClass)->isObject();
+        it('returns string smack for string value', function (): void {
+            $result = Smack::maybe('value')->isString();
 
-        expect($result)->toBeInstanceOf(ObjectSmack::class);
+            expect($result)->toBeInstanceOf(StringSmack::class);
+        });
+    });
+
+    describe('isInt', function (): void {
+        it('returns int smack for null', function (): void {
+            $result = Smack::maybe(null)->isInt();
+
+            expect($result)->toBeInstanceOf(IntSmack::class);
+        });
+
+        it('throws for non int value', function (): void {
+            Smack::maybe(1.23)->isInt();
+        })->throws(SmackException::class, 'Validation failed for `1.23`: expected `int`, got `1.23`.');
+
+        it('returns int smack for int value', function (): void {
+            $result = Smack::maybe(123)->isInt();
+
+            expect($result)->toBeInstanceOf(IntSmack::class);
+        });
+    });
+
+    describe('isFloat', function (): void {
+        it('returns float smack for null', function (): void {
+            $result = Smack::maybe(null)->isFloat();
+
+            expect($result)->toBeInstanceOf(FloatSmack::class);
+        });
+
+        it('throws for non float value', function (): void {
+            Smack::maybe(1)->isFloat();
+        })->throws(SmackException::class, 'Validation failed for `1`: expected `float`, got `1`.');
+
+        it('returns float smack for float value', function (): void {
+            $result = Smack::maybe(1.23)->isFloat();
+
+            expect($result)->toBeInstanceOf(FloatSmack::class);
+        });
+    });
+
+    describe('isObject', function (): void {
+        it('returns object smack for null', function (): void {
+            $result = Smack::maybe(null)->isObject();
+
+            expect($result)->toBeInstanceOf(ObjectSmack::class);
+        });
+
+        it('throws for non object value', function (): void {
+            Smack::maybe('value')->isObject();
+        })->throws(SmackException::class, 'Validation failed for `\'value\'`: expected `object`, got `"value"`.');
+
+        it('returns object smack for object value', function (): void {
+            $result = Smack::maybe(new stdClass)->isObject();
+
+            expect($result)->toBeInstanceOf(ObjectSmack::class);
+        });
     });
 });

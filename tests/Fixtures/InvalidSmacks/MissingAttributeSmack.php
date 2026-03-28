@@ -13,7 +13,7 @@ final readonly class MissingAttributeSmack implements Smackable
     private function __construct() {}
 
     #[Override]
-    public static function screenInto(mixed $value, Trace $trace): self
+    public static function screenInto(mixed $value, Trace $trace, bool $optional = false): self
     {
         if ($value instanceof GamePlayer) {
             return new self;
