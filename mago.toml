@@ -10,6 +10,7 @@ excludes = []
 
 [formatter]
 preset = "pint"
+opening-tag-on-own-line = false
 empty-line-after-opening-tag = false
 
 [linter]

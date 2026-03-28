@@ -24,9 +24,9 @@
         "php": "^8.5"
     },
     "require-dev": {
-        "carthage-software/mago": "^1.13.2",
-        "pestphp/pest": "^4.4.1",
-        "rector/rector": "^2.3.8",
+        "carthage-software/mago": "^1.16.0",
+        "pestphp/pest": "^4.4.3",
+        "rector/rector": "^2.3.9",
         "spatie/ray": "^1.47"
     },
     "autoload": {
