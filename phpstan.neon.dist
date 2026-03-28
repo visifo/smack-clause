@@ -6,5 +6,10 @@ parameters:
     level: max
     paths:
         - src
+        - tests
         - _smack_ide_helper.php
     phpVersion: 80500
+    ignoreErrors:
+        -
+            identifier: method.internalClass
+            path: tests/*
