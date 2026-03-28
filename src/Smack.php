@@ -20,6 +20,7 @@ readonly class Smack
     public function __construct(
         private mixed $value,
         private Trace $trace,
+        private bool $optional = false,
     ) {}
 
     public static function that(mixed $value): Smack
@@ -34,6 +35,16 @@ readonly class Smack
         }
 
         throw SmackException::forNullValue($trace);
+    }
+
+    public static function maybe(mixed $value): Smack
+    {
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $frame = $frames[0] ?? [];
+
+        $trace = Trace::fromBacktrace($frame);
+
+        return new Smack($value, $trace, true);
     }
 
     /**
@@ -58,32 +69,32 @@ readonly class Smack
             throw new BadMethodCallException(sprintf('Smack method `%s` does not accept arguments.', $name));
         }
 
-        return $smackClass::screenInto($this->value, $this->trace);
+        return $smackClass::screenInto($this->value, $this->trace, $this->optional);
     }
 
     public function isBool(): BoolSmack
     {
-        return BoolSmack::screenInto($this->value, $this->trace);
+        return BoolSmack::screenInto($this->value, $this->trace, $this->optional);
     }
 
     public function isString(): StringSmack
     {
-        return StringSmack::screenInto($this->value, $this->trace);
+        return StringSmack::screenInto($this->value, $this->trace, $this->optional);
     }
 
     public function isInt(): IntSmack
     {
-        return IntSmack::screenInto($this->value, $this->trace);
+        return IntSmack::screenInto($this->value, $this->trace, $this->optional);
     }
 
     public function isFloat(): FloatSmack
     {
-        return FloatSmack::screenInto($this->value, $this->trace);
+        return FloatSmack::screenInto($this->value, $this->trace, $this->optional);
     }
 
     public function isObject(): ObjectSmack
     {
-        return ObjectSmack::screenInto($this->value, $this->trace);
+        return ObjectSmack::screenInto($this->value, $this->trace, $this->optional);
     }
 
     private static function registry(): SmackRegistry
