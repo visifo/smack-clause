@@ -41,10 +41,15 @@ final class IdeHelperCommand
                 }
 
                 if (! class_exists($class)) {
-                    if (interface_exists($class) || trait_exists($class) || enum_exists($class)) {
+                    if (interface_exists($class)) {
                         continue;
                     }
-
+                    if (trait_exists($class)) {
+                        continue;
+                    }
+                    if (enum_exists($class)) {
+                        continue;
+                    }
                     throw new RuntimeException(sprintf('Class `%s` from `%s` could not be loaded.', $class, $file));
                 }
 
@@ -214,7 +219,7 @@ final class IdeHelperCommand
 
     /**
      * @param array<string, list<string>> $autoloadPaths
-     * @return array<class-string, string>
+     * @return array<string, string>
      */
     private static function discoverClassFiles(array $autoloadPaths, ?string $scanPath): array
     {

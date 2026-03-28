@@ -26,10 +26,7 @@ readonly class Smack
     public static function that(mixed $value): Smack
     {
         $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-        $frame = [];
-        if (isset($frames[0]) && is_array($frames[0])) {
-            $frame = $frames[0];
-        }
+        $frame = $frames[0] ?? [];
 
         $trace = Trace::fromBacktrace($frame);
 

@@ -60,7 +60,7 @@
         ],
         "full": [
             "@fix",
-            "@check",
+            "@phpstan",
             "@test"
         ]
     },

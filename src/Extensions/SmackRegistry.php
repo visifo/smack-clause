@@ -49,7 +49,7 @@ final class SmackRegistry
             throw new InvalidArgumentException('Smack method name must not be empty.');
         }
 
-        if (! preg_match('/^[a-zA-Z_]\w*$/', $name)) {
+        if (preg_match('/^[a-zA-Z_]\w*$/', $name) !== 1) {
             throw new InvalidArgumentException(sprintf('Smack method `%s` is not a valid PHP method name.', $name));
         }
 
