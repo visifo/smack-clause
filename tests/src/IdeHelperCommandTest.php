@@ -154,4 +154,37 @@ describe('ide helper command', function (): void {
             smackDeleteDirectory($root);
         }
     });
+
+    it('generates an empty helper file when no custom smacks are found', function (): void {
+        $root = realpath(__DIR__.'/../..');
+        expect($root)->toBeString();
+
+        if (! is_string($root)) {
+            return;
+        }
+
+        $helperFile = $root.'/_smack_ide_helper.php';
+        if (is_file($helperFile)) {
+            unlink($helperFile);
+        }
+
+        try {
+            $exitCode = IdeHelperCommand::run([
+                '--root='.$root,
+            ]);
+
+            expect($exitCode)->toBe(0);
+            expect($helperFile)->toBeFile();
+
+            $content = file_get_contents($helperFile);
+            expect($content)
+                ->toBeString()
+                ->toContain('final class IdeHelperSmack {}')
+                ->not->toContain('@method');
+        } finally {
+            if (is_file($helperFile)) {
+                unlink($helperFile);
+            }
+        }
+    });
 });

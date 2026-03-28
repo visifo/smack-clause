@@ -6,4 +6,5 @@ parameters:
     level: max
     paths:
         - src
+        - _smack_ide_helper.php
     phpVersion: 80500

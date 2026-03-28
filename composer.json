@@ -45,6 +45,7 @@
         "bin/smack-ide-helper"
     ],
     "scripts": {
+        "helper": "bin/smack-ide-helper",
         "test": "vendor/bin/pest --compact",
         "test-coverage": "vendor/bin/pest --coverage",
         "rect": "vendor/bin/rector",
