@@ -51,8 +51,11 @@
         "rect": "vendor/bin/rector",
         "lint": "vendor/bin/mago lint --fix --unsafe",
         "format": "vendor/bin/mago fmt",
-        "check": "vendor/bin/mago analyze --minimum-fail-level help",
-        "phpstan": "vendor/bin/phpstan analyse --memory-limit=1G",
+        "mago-analyze": "vendor/bin/mago analyze --minimum-fail-level help",
+        "check": [
+            "@helper",
+            "vendor/bin/phpstan analyse --memory-limit=1G"
+        ],
         "fix": [
             "@rect",
             "@lint",
@@ -60,8 +63,7 @@
         ],
         "full": [
             "@fix",
-            "@helper",
-            "@phpstan",
+            "@check",
             "@test"
         ]
     },
