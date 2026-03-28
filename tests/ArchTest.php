@@ -13,4 +13,6 @@ it('will not use debugging functions')
 
 arch('implements Smackable')
     ->expect('Visifo\SmackClause\Types')
-    ->toImplement(Smackable::class);
+    ->toImplement(Smackable::class)
+    ->toHaveSuffix('Smack')
+    ->classes->not->toBeFinal();
