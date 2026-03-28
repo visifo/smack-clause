@@ -5,21 +5,20 @@ namespace Visifo\SmackClause\Tests\Fixtures\InvalidSmacks;
 use Override;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
-use Visifo\SmackClause\Extensions\CustomSmack;
+use Visifo\SmackClause\Smackable;
 use Visifo\SmackClause\Tests\Fixtures\Smacks\GamePlayer;
 
-final readonly class MissingAttributeSmack extends CustomSmack
+final readonly class MissingAttributeSmack implements Smackable
 {
+    private function __construct() {}
+
     #[Override]
-    public static function fromSmack(
-        mixed $value,
-        Trace $trace,
-        mixed ...$arguments,
-    ): static {
+    public static function screenInto(mixed $value, Trace $trace): self
+    {
         if (! $value instanceof GamePlayer) {
             throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
         }
 
-        return new self($trace);
+        return new self;
     }
 }

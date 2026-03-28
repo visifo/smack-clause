@@ -9,7 +9,7 @@ use ReflectionClass;
 use RuntimeException;
 use SplFileInfo;
 use Throwable;
-use Visifo\SmackClause\Extensions\CustomSmack;
+use Visifo\SmackClause\Extensions\SmackMethod;
 use Visifo\SmackClause\Extensions\SmackRegistry;
 
 final class IdeHelperCommand
@@ -56,12 +56,16 @@ final class IdeHelperCommand
                     throw new RuntimeException(sprintf('Class `%s` from `%s` could not be loaded.', $class, $file));
                 }
 
-                if (! is_subclass_of($class, CustomSmack::class)) {
+                if (! is_subclass_of($class, Smackable::class)) {
                     continue;
                 }
 
                 $reflection = new ReflectionClass($class);
                 if ($reflection->isAbstract()) {
+                    continue;
+                }
+
+                if ($reflection->getAttributes(SmackMethod::class) === []) {
                     continue;
                 }
 
@@ -288,7 +292,7 @@ final class IdeHelperCommand
     }
 
     /**
-     * @param array<string, class-string<CustomSmack>> $methods
+     * @param array<string, class-string<Smackable>> $methods
      */
     private static function buildHelperContent(array $methods): string
     {

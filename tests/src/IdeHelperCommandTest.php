@@ -15,7 +15,7 @@ function ideHelperFixturePath(string $fixture): string
 }
 
 describe('ide helper command', function (): void {
-    it('generates helper file for valid custom smacks', function (): void {
+    it('generates helper file for valid dynamic smacks', function (): void {
         $validScanPath = ideHelperFixturePath('Smacks');
         $root = smackCreateTempProjectRoot([
             'Visifo\\SmackClause\\Tests\\Fixtures\\Smacks\\' => $validScanPath,
@@ -103,7 +103,7 @@ describe('ide helper command', function (): void {
         }
     });
 
-    it('fails strictly for invalid custom smacks', function (): void {
+    it('fails strictly for invalid dynamic smacks', function (): void {
         $invalidScanPath = ideHelperFixturePath('InvalidSmacks');
         $root = smackCreateTempProjectRoot([
             'Visifo\\SmackClause\\Tests\\Fixtures\\InvalidSmacks\\' => $invalidScanPath,
@@ -155,7 +155,7 @@ describe('ide helper command', function (): void {
         }
     });
 
-    it('generates an empty helper file when no custom smacks are found', function (): void {
+    it('generates an empty helper file when no dynamic smacks are found', function (): void {
         $root = realpath(__DIR__.'/../..');
         expect($root)->toBeString();
 

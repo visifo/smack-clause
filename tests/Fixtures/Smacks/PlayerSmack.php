@@ -5,25 +5,22 @@ namespace Visifo\SmackClause\Tests\Fixtures\Smacks;
 use Override;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
-use Visifo\SmackClause\Extensions\CustomSmack;
 use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Types\ObjectSmack;
 
 #[SmackMethod('isPlayer')]
-final readonly class PlayerSmack extends CustomSmack
+final readonly class PlayerSmack extends ObjectSmack
 {
     public function __construct(
         private GamePlayer $player,
-        Trace $trace,
+        private Trace $trace,
     ) {
-        parent::__construct($trace);
+        parent::__construct($player, $trace);
     }
 
     #[Override]
-    public static function fromSmack(
-        mixed $value,
-        Trace $trace,
-        mixed ...$arguments,
-    ): static {
+    public static function screenInto(mixed $value, Trace $trace): self
+    {
         if (! $value instanceof GamePlayer) {
             throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
         }
@@ -33,15 +30,19 @@ final readonly class PlayerSmack extends CustomSmack
 
     public function isNotUn(): self
     {
-        $this->ensure(! $this->player->isUn(), 'not UN', $this->player);
+        if (! $this->player->isUn()) {
+            return $this;
+        }
 
-        return $this;
+        throw SmackException::forConstraint('not UN', $this->player, $this->trace);
     }
 
     public function isInPlayState(): self
     {
-        $this->ensure($this->player->game->isInPlayState(), 'game in play state', $this->player);
+        if ($this->player->game->isInPlayState()) {
+            return $this;
+        }
 
-        return $this;
+        throw SmackException::forConstraint('game in play state', $this->player, $this->trace);
     }
 }

@@ -5,7 +5,7 @@
 - When asking questions or providing suggestions, always number them so responses can be referenced by number.
 - Always remove to-do's that you have fixed.
 - After finishing changes run `composer fix` to format the code.
-- After formatting run `composer check`, evaluate the results, and ensure there are no issues to confirm type safety.
+- After formatting run `composer phpstan`, evaluate the results, and ensure there are no issues to confirm type safety.
 
 
 ## Docker

@@ -65,26 +65,69 @@ Smack::register(PlayerSmack::class);
 Smack::register(VatSmack::class);
 ```
 
-`CustomSmack` is the base class for domain smacks. Add `#[SmackMethod('...')]` on the class and implement `fromSmack(...)`:
+Use `#[SmackMethod('...')]` on the class and implement `screenInto(...)`.
+Dynamic smack root methods do not accept arguments.
+
+### Option 1: Implement `Smackable` directly
 
 ```php
-use Visifo\SmackClause\Exceptions\SmackException;use Visifo\SmackClause\Exceptions\Trace;use Visifo\SmackClause\Extensions\CustomSmack;use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
+use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Smackable;
+
+#[SmackMethod('isVat')]
+final readonly class VatSmack implements Smackable
+{
+    private function __construct(
+        private VatId $vat,
+        private Trace $trace,
+    ) {}
+
+    public static function screenInto(
+        mixed $value,
+        Trace $trace,
+    ): self {
+        if (! $value instanceof VatId) {
+            throw SmackException::forExpectedType(VatId::class, $value, $trace);
+        }
+
+        return new self($value, $trace);
+    }
+
+    public function isEu(): self
+    {
+        if ($this->vat->isEu()) {
+            return $this;
+        }
+
+        throw SmackException::forConstraint('EU VAT ID', $this->vat, $this->trace);
+    }
+}
+```
+
+### Option 2: Extend a typed smack (for method reuse)
+
+If you extend `ObjectSmack`, always override `screenInto(...)` and call `parent::__construct(...)` to keep inherited object methods safe.
+
+```php
+use Visifo\SmackClause\Exceptions\SmackException;
+use Visifo\SmackClause\Exceptions\Trace;
+use Visifo\SmackClause\Extensions\SmackMethod;
+use Visifo\SmackClause\Types\ObjectSmack;
 
 #[SmackMethod('isPlayer')]
-final readonly class PlayerSmack extends CustomSmack
+final readonly class PlayerSmack extends ObjectSmack
 {
     public function __construct(
         private GamePlayer $player,
-        Trace $trace,
+        private Trace $trace,
     ) {
-        parent::__construct($trace);
+        parent::__construct($player, $trace);
     }
 
-    public static function fromSmack(
-        mixed $value,
-        Trace $trace,
-        mixed ...$arguments,
-    ): static {
+    public static function screenInto(mixed $value, Trace $trace): self
+    {
         if (! $value instanceof GamePlayer) {
             throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
         }
@@ -94,9 +137,11 @@ final readonly class PlayerSmack extends CustomSmack
 
     public function isNotUn(): self
     {
-        $this->ensure(! $this->player->isUn(), 'not UN', $this->player);
+        if (! $this->player->isUn()) {
+            return $this;
+        }
 
-        return $this;
+        throw SmackException::forConstraint('not UN', $this->player, $this->trace);
     }
 }
 ```
@@ -132,7 +177,7 @@ Smack::that($player)
     ->isNotUn();
 ```
 
-The generator is strict and fails if any `CustomSmack` implementation is invalid (missing `#[SmackMethod('...')]`, duplicate method name, invalid class, etc.).
+The generator is strict and fails if any registered smack class is invalid (missing `#[SmackMethod('...')]`, duplicate method name, missing `screenInto(...)`, inherited `screenInto(...)` without override, invalid class, etc.).
 
 ## The Violation Report
 When a check fails, `SmackViolation` *(extends `InvalidArgumentException`)* gives you the forensics:

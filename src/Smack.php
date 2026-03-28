@@ -5,7 +5,6 @@ namespace Visifo\SmackClause;
 use BadMethodCallException;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
-use Visifo\SmackClause\Extensions\CustomSmack;
 use Visifo\SmackClause\Extensions\SmackRegistry;
 use Visifo\SmackClause\Types\BoolSmack;
 use Visifo\SmackClause\Types\FloatSmack;
@@ -38,7 +37,7 @@ readonly class Smack
     }
 
     /**
-     * @param class-string<CustomSmack> $smackClass
+     * @param class-string<Smackable> $smackClass
      */
     public static function register(string $smackClass): void
     {
@@ -55,7 +54,11 @@ readonly class Smack
             throw new BadMethodCallException(sprintf('Smack method `%s` is not registered.', $name));
         }
 
-        return $smackClass::fromSmack($this->value, $this->trace, ...$arguments);
+        if ($arguments !== []) {
+            throw new BadMethodCallException(sprintf('Smack method `%s` does not accept arguments.', $name));
+        }
+
+        return $smackClass::screenInto($this->value, $this->trace);
     }
 
     public function isBool(): BoolSmack

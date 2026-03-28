@@ -5,11 +5,12 @@ namespace Visifo\SmackClause\Extensions;
 use InvalidArgumentException;
 use ReflectionClass;
 use Visifo\SmackClause\Smack;
+use Visifo\SmackClause\Smackable;
 
 final class SmackRegistry
 {
     /**
-     * @var array<string, class-string<CustomSmack>>
+     * @var array<string, class-string<Smackable>>
      */
     private array $methods = [];
 
@@ -19,11 +20,11 @@ final class SmackRegistry
             throw new InvalidArgumentException(sprintf('Smack class `%s` does not exist.', $smackClass));
         }
 
-        if (! is_subclass_of($smackClass, CustomSmack::class)) {
+        if (! is_subclass_of($smackClass, Smackable::class)) {
             throw new InvalidArgumentException(sprintf(
-                'Smack class `%s` must extend `%s`.',
+                'Smack class `%s` must implement `%s`.',
                 $smackClass,
-                CustomSmack::class,
+                Smackable::class,
             ));
         }
 
@@ -61,17 +62,24 @@ final class SmackRegistry
             throw new InvalidArgumentException(sprintf('Smack method `%s` is already registered.', $name));
         }
 
-        if (! $reflection->hasMethod('fromSmack')) {
+        if (! $reflection->hasMethod('screenInto')) {
             throw new InvalidArgumentException(sprintf(
-                'Smack class `%s` must define a public static `fromSmack` method.',
+                'Smack class `%s` must define a public static `screenInto` method.',
                 $smackClass,
             ));
         }
 
-        $constructor = $reflection->getMethod('fromSmack');
-        if (! $constructor->isPublic() || ! $constructor->isStatic()) {
+        $screenInto = $reflection->getMethod('screenInto');
+        if (! $screenInto->isPublic() || ! $screenInto->isStatic()) {
             throw new InvalidArgumentException(sprintf(
-                'Smack class `%s` must define a public static `fromSmack` method.',
+                'Smack class `%s` must define a public static `screenInto` method.',
+                $smackClass,
+            ));
+        }
+
+        if ($screenInto->getDeclaringClass()->getName() !== $smackClass) {
+            throw new InvalidArgumentException(sprintf(
+                'Smack class `%s` must override `screenInto`.',
                 $smackClass,
             ));
         }
@@ -80,7 +88,7 @@ final class SmackRegistry
     }
 
     /**
-     * @return class-string<CustomSmack>|null
+     * @return class-string<Smackable>|null
      */
     public function resolve(string $name): ?string
     {
@@ -88,7 +96,7 @@ final class SmackRegistry
     }
 
     /**
-     * @return array<string, class-string<CustomSmack>>
+     * @return array<string, class-string<Smackable>>
      */
     public function all(): array
     {
