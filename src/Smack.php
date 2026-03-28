@@ -63,47 +63,27 @@ readonly class Smack
 
     public function isBool(): BoolSmack
     {
-        if (is_bool($this->value)) {
-            return new BoolSmack($this->value, $this->trace);
-        }
-
-        throw SmackException::forExpectedType('bool', $this->value, $this->trace);
+        return BoolSmack::screenInto($this->value, $this->trace);
     }
 
     public function isString(): StringSmack
     {
-        if (is_string($this->value)) {
-            return new StringSmack($this->value, $this->trace);
-        }
-
-        throw SmackException::forExpectedType('string', $this->value, $this->trace);
+        return StringSmack::screenInto($this->value, $this->trace);
     }
 
     public function isInt(): IntSmack
     {
-        if (is_int($this->value)) {
-            return new IntSmack($this->value, $this->trace);
-        }
-
-        throw SmackException::forExpectedType('int', $this->value, $this->trace);
+        return IntSmack::screenInto($this->value, $this->trace);
     }
 
     public function isFloat(): FloatSmack
     {
-        if (is_float($this->value)) {
-            return new FloatSmack($this->value, $this->trace);
-        }
-
-        throw SmackException::forExpectedType('float', $this->value, $this->trace);
+        return FloatSmack::screenInto($this->value, $this->trace);
     }
 
     public function isObject(): ObjectSmack
     {
-        if (is_object($this->value)) {
-            return new ObjectSmack($this->value, $this->trace);
-        }
-
-        throw SmackException::forExpectedType('object', $this->value, $this->trace);
+        return ObjectSmack::screenInto($this->value, $this->trace);
     }
 
     private static function registry(): SmackRegistry

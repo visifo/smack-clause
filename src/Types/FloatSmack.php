@@ -2,15 +2,27 @@
 
 namespace Visifo\SmackClause\Types;
 
+use Override;
 use Visifo\SmackClause\Exceptions\SmackException;
 use Visifo\SmackClause\Exceptions\Trace;
+use Visifo\SmackClause\Smackable;
 
-readonly class FloatSmack
+readonly class FloatSmack implements Smackable
 {
     public function __construct(
         private float $value,
         private Trace $trace,
     ) {}
+
+    #[Override]
+    public static function screenInto(mixed $value, Trace $trace): self
+    {
+        if (! is_float($value)) {
+            throw SmackException::forExpectedType('float', $value, $trace);
+        }
+
+        return new self($value, $trace);
+    }
 
     public function isPositive(): self
     {
