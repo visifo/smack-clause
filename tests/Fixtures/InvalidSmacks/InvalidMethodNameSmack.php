@@ -12,9 +12,7 @@ use Visifo\SmackClause\Tests\Fixtures\Smacks\GamePlayer;
 #[SmackMethod('is-player')]
 final readonly class InvalidMethodNameSmack implements Smackable
 {
-    private function __construct(
-        private GamePlayer $player,
-    ) {}
+    private function __construct() {}
 
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
@@ -23,6 +21,6 @@ final readonly class InvalidMethodNameSmack implements Smackable
             throw SmackException::forExpectedType(GamePlayer::class, $value, $trace);
         }
 
-        return new self($value);
+        return new self;
     }
 }
