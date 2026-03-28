@@ -17,11 +17,11 @@ readonly class BoolSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! is_bool($value)) {
-            throw SmackException::forExpectedType('bool', $value, $trace);
+        if (is_bool($value)) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType('bool', $value, $trace);
     }
 
     public function isTrue(): void

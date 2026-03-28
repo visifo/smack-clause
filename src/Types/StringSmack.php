@@ -17,11 +17,11 @@ readonly class StringSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! is_string($value)) {
-            throw SmackException::forExpectedType('string', $value, $trace);
+        if (is_string($value)) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType('string', $value, $trace);
     }
 
     public function isNotEmpty(): self

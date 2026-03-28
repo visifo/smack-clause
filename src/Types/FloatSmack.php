@@ -17,11 +17,11 @@ readonly class FloatSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! is_float($value)) {
-            throw SmackException::forExpectedType('float', $value, $trace);
+        if (is_float($value)) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType('float', $value, $trace);
     }
 
     public function isPositive(): self

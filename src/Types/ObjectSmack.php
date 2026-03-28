@@ -17,11 +17,11 @@ readonly class ObjectSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! is_object($value)) {
-            throw SmackException::forExpectedType('object', $value, $trace);
+        if (is_object($value)) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType('object', $value, $trace);
     }
 
     /**

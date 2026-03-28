@@ -17,11 +17,11 @@ readonly class IntSmack implements Smackable
     #[Override]
     public static function screenInto(mixed $value, Trace $trace): self
     {
-        if (! is_int($value)) {
-            throw SmackException::forExpectedType('int', $value, $trace);
+        if (is_int($value)) {
+            return new self($value, $trace);
         }
 
-        return new self($value, $trace);
+        throw SmackException::forExpectedType('int', $value, $trace);
     }
 
     public function isPositive(): self
