@@ -44,12 +44,15 @@ final class IdeHelperCommand
                     if (interface_exists($class)) {
                         continue;
                     }
+
                     if (trait_exists($class)) {
                         continue;
                     }
+
                     if (enum_exists($class)) {
                         continue;
                     }
+
                     throw new RuntimeException(sprintf('Class `%s` from `%s` could not be loaded.', $class, $file));
                 }
 

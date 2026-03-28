@@ -19,6 +19,4 @@ return RectorConfig::configure()
         privatization: true,
         instanceOf: true,
         earlyReturn: true
-    )->withSkip([
-        EncapsedStringsToSprintfRector::class,
-    ]);
+    );
