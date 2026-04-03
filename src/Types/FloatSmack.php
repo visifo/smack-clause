@@ -13,6 +13,7 @@ readonly class FloatSmack implements Smackable
         private ?float $value,
         private Trace $trace,
         private bool $optional = false,
+        private bool $allowZero = false,
     ) {}
 
     #[Override]
@@ -29,6 +30,16 @@ readonly class FloatSmack implements Smackable
         throw SmackException::forExpectedType('float', $value, $trace);
     }
 
+    public function allowZero(): self
+    {
+        return new self(
+            value: $this->value,
+            trace: $this->trace,
+            optional: $this->optional,
+            allowZero: true,
+        );
+    }
+
     public function isPositive(): self
     {
         if ($this->value === null) {
@@ -39,11 +50,19 @@ readonly class FloatSmack implements Smackable
             throw SmackException::forNullValue($this->trace);
         }
 
+        if ($this->allowZero && $this->value === 0.0) {
+            return $this;
+        }
+
         if ($this->value > 0) {
             return $this;
         }
 
-        throw SmackException::forConstraint('positive float', $this->value, $this->trace);
+        throw SmackException::forConstraint(
+            $this->allowZero ? 'positive or zero float' : 'positive float',
+            $this->value,
+            $this->trace,
+        );
     }
 
     public function isNegative(): self
@@ -56,10 +75,18 @@ readonly class FloatSmack implements Smackable
             throw SmackException::forNullValue($this->trace);
         }
 
+        if ($this->allowZero && $this->value === 0.0) {
+            return $this;
+        }
+
         if ($this->value < 0) {
             return $this;
         }
 
-        throw SmackException::forConstraint('negative float', $this->value, $this->trace);
+        throw SmackException::forConstraint(
+            $this->allowZero ? 'negative or zero float' : 'negative float',
+            $this->value,
+            $this->trace,
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 - Don't run or change tests unless explicitly requested.
 - Avoid deeply nested if-else blocks; prefer flat structure with early returns.
+- In boolean condition chains, put the boolean flag first so it short-circuits before other comparisons.
 - When asking questions or providing suggestions, always number them so responses can be referenced by number.
 - Always remove to-do's that you have fixed.
 - After finishing changes run `composer fix` to format the code.

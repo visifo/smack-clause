@@ -43,6 +43,19 @@ Smack::maybe($bio)->isString()->max(200);
 Smack::that($userIDs)->each()->isInt()->isPositive();
 ```
 
+### Allow Zero for Sign Checks
+
+By default, `isPositive()` and `isNegative()` are strict (`> 0` and `< 0`).
+Use `allowZero()` when you want zero to pass sign checks.
+
+```php
+Smack::that($quantity)->isInt()->allowZero()->isPositive(); // allows 0 and positive ints
+Smack::that($balance)->isInt()->allowZero()->isNegative(); // allows 0 and negative ints
+
+Smack::that($price)->isFloat()->allowZero()->isPositive(); // allows 0.0 and positive floats
+Smack::that($delta)->isFloat()->allowZero()->isNegative(); // allows 0.0 and negative floats
+```
+
 ## Custom Smacks
 Extend the library with your own logic while keeping `Smack::that(...)->...` syntax.
 
